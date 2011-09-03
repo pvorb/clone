@@ -1,7 +1,9 @@
 var clone = function(param) {
 	var result;
+	if (typeof param === "undefined")
+		return undefined;
 	// if function
-	if (typeof param === "function") {
+	else if (typeof param === "function") {
 		var tmp = param;
 		result = function() {
 			return tmp.apply(param, arguments);

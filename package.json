@@ -3,7 +3,7 @@
 	"name": "clone",
 	"description": "deep cloning of objects and arrays",
 	"tags": [ "clone", "object", "array" ],
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/pvorb/node-clone.git"
