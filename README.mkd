@@ -1,0 +1,12 @@
+**clone** offers foolproof _deep_ cloning of variables in JavaScript.
+
+```javascript
+var clone = require("clone");
+
+var a, b;
+a = { foo: { bar: "baz" } };
+b = clone(a);
+a.foo.bar = "foo";
+
+console.log(a);
+```
