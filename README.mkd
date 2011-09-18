@@ -16,7 +16,7 @@ console.log(b);
 This will print:
 
 ```
-{ foo: { bar: 'foo' } }
+{ foo: { bar: 'baz' } }
 ```
 
 It masters cloning objects, arrays, functions, dates (not save; objects that
