@@ -2,8 +2,8 @@
 	"author": "Paul Vorbach <paul@vorb.de> (http://vorb.de)",
 	"name": "clone",
 	"description": "deep cloning of objects and arrays",
-	"tags": [ "clone", "object", "array" ],
-	"version": "0.0.1",
+	"tags": [ "clone", "object", "array", "function", "date" ],
+	"version": "0.0.2",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/pvorb/node-clone.git"

@@ -20,7 +20,7 @@ This will print:
 ```
 
 It masters cloning objects, arrays, functions, dates (not save; objects that
-define a property `getTime`, which must be a function). There’s no error if
+define a property `getTime`, which must be a function). There is no error if
 `undefined` is given.
 
 Everything is cloned recursively, so that you can clone dates in arrays in
