@@ -1,12 +1,27 @@
 **clone** offers foolproof _deep_ cloning of variables in JavaScript.
 
+## Example
+
 ```javascript
-var clone = require("clone");
+var clone = require('clone');
 
 var a, b;
-a = { foo: { bar: "baz" } };
+a = { foo: { bar: 'baz' } };
 b = clone(a);
-a.foo.bar = "foo";
+a.foo.bar = 'foo';
 
 console.log(b);
 ```
+
+This will print:
+
+```
+{ foo: { bar: 'foo' } }
+```
+
+It masters cloning objects, arrays, functions, dates (not save; objects that
+define a property `getTime`, which must be a function). There’s no error if
+`undefined` is given.
+
+Everything is cloned recursively, so that you can clone dates in arrays in
+objects… for example.
