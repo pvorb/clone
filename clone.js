@@ -11,15 +11,12 @@ var clone = function(param) {
     };
   }
   // if date (not 100% safe)
-  else if (param instanceof Date) {
+  else if (typeof param.getTime == 'function') {
     result = new Date(param.getTime());
   }
   // if array
-  else if (param instanceof Array)
+  else if (typeof param == 'array')
     result = [];
-  // if regexp
-  else if (param instanceof RegExp)
-    result = new RegExp(param.source);
   // if object
   else if (typeof param == 'object')
     result = {};
