@@ -84,14 +84,14 @@ function test()
 	_(aCopy.c[0] == a.c[0]);
 	
 	console.log(util.inspect(aCopy, true, null) );
-	console.log("------------------------------------------------------------------");
+	console.log("------------------------------------------------------------");
 	console.log(util.inspect(a, true, null) );
 	_(eq(a, aCopy));
 	aCopy.c[0] = 2;
 	_(!eq(a, aCopy));
 	aCopy.c = "2";
 	_(!eq(a, aCopy));
-	console.log("------------------------------------------------------------------");
+	console.log("------------------------------------------------------------");
 	console.log(util.inspect(aCopy, true, null) );
 
 	function eq(x, y) {
