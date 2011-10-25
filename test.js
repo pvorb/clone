@@ -67,35 +67,35 @@ else
 
 function test()
 {
-	var util = require('util');
-	var _ = console.assert;
-	var c = [1, "foo", {'hello': 'bar'}, function() {}, false, [2]];
-	var b = [c, 2, 3, 4];
-	var a = {'b': b, 'c': c};
-	a.loop = a;
-	a.loop2 = a;
-	c.loop = c;
-	c.aloop = a;
-	var aCopy = clone(a);
-	_(a != aCopy);
-	_(a.c != aCopy.c);
-	_(aCopy.c == aCopy.b[0]);
-	_(aCopy.c.loop.loop.aloop == aCopy);
-	_(aCopy.c[0] == a.c[0]);
-	
-	console.log(util.inspect(aCopy, true, null) );
-	console.log("------------------------------------------------------------");
-	console.log(util.inspect(a, true, null) );
-	_(eq(a, aCopy));
-	aCopy.c[0] = 2;
-	_(!eq(a, aCopy));
-	aCopy.c = "2";
-	_(!eq(a, aCopy));
-	console.log("------------------------------------------------------------");
-	console.log(util.inspect(aCopy, true, null) );
+  var util = require('util');
+  var _ = console.assert;
+  var c = [1, "foo", {'hello': 'bar'}, function() {}, false, [2]];
+  var b = [c, 2, 3, 4];
+  var a = {'b': b, 'c': c};
+  a.loop = a;
+  a.loop2 = a;
+  c.loop = c;
+  c.aloop = a;
+  var aCopy = clone(a);
+  _(a != aCopy);
+  _(a.c != aCopy.c);
+  _(aCopy.c == aCopy.b[0]);
+  _(aCopy.c.loop.loop.aloop == aCopy);
+  _(aCopy.c[0] == a.c[0]);
+  
+  console.log(util.inspect(aCopy, true, null) );
+  console.log("------------------------------------------------------------");
+  console.log(util.inspect(a, true, null) );
+  _(eq(a, aCopy));
+  aCopy.c[0] = 2;
+  _(!eq(a, aCopy));
+  aCopy.c = "2";
+  _(!eq(a, aCopy));
+  console.log("------------------------------------------------------------");
+  console.log(util.inspect(aCopy, true, null) );
 
-	function eq(x, y) {
-		return util.inspect(x, true, null) === util.inspect(y, true, null);
-	}
+  function eq(x, y) {
+    return util.inspect(x, true, null) === util.inspect(y, true, null);
+  }
 }
 test();

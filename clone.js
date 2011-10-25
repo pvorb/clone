@@ -10,7 +10,7 @@ module.exports = clone;
   
   @param `parent` - the object to be cloned
   @param `circular` - set to true if the object to be cloned may contain
-	circular references. (optional - true by default)
+    circular references. (optional - true by default)
 */
 function clone(parent, circular) {
   if (circular == undefined) circular = true;
@@ -29,7 +29,7 @@ function clone(parent, circular) {
             //We found a circular reference
             circularReplace.push({'resolveTo': i, 'child': child, 'i': cIndex});
             return null; //Just return null for now...
-			//we will resolve circular references later...
+            //we will resolve circular references later...
           }
         //Add to list of all parent objects
         circularParent[context] = parent;
@@ -59,7 +59,7 @@ function clone(parent, circular) {
     }
     var cloned = _clone(parent, "*");
     /* Now this object has been cloned. Let's check to see if there are any
-	circular references for it */
+       circular references for it */
     for(i in circularReplace) {
       var c = circularReplace[i];
       c.child[c.i] = circularResolved[c.resolveTo];
