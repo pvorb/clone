@@ -12,6 +12,7 @@
 		"web": "https://github.com/pvorb/node-clone/issues"
 	},
 	"main": "clone.js",
+	"contributors": ["Blake Miner"],
 	"engines": {
 		"node": "*"
 	}
