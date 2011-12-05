@@ -12,7 +12,10 @@
     "url": "https://github.com/pvorb/node-clone/issues"
   },
   "main": "clone.js",
-  "contributors": ["Blake Miner"],
+  "contributors": [
+    "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com)",
+    "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)"
+  ],
   "engines": {
     "node": "*"
   }
