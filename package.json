@@ -1,19 +1,19 @@
 {
-	"author": "Paul Vorbach <paul@vorb.de> (http://vorb.de)",
-	"name": "clone",
-	"description": "deep cloning of objects and arrays",
-	"tags": [ "clone", "object", "array", "function", "date" ],
-	"version": "0.0.3",
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/pvorb/node-clone.git"
-	},
-	"bugs": {
-		"url": "https://github.com/pvorb/node-clone/issues"
-	},
-	"main": "clone.js",
-	"contributors": ["Blake Miner"],
-	"engines": {
-		"node": "*"
-	}
+  "author": "Paul Vorbach <paul@vorb.de> (http://vorb.de)",
+  "name": "clone",
+  "description": "deep cloning of objects and arrays",
+  "tags": [ "clone", "object", "array", "function", "date" ],
+  "version": "0.0.3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pvorb/node-clone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pvorb/node-clone/issues"
+  },
+  "main": "clone.js",
+  "contributors": ["Blake Miner"],
+  "engines": {
+    "node": "*"
+  }
 }
