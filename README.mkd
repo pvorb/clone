@@ -4,7 +4,9 @@
 ```bash
 $ npm install clone
 ```
+
 or
+
 ```bash
 # npm install -g clone
 ```
