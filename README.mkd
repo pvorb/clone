@@ -2,13 +2,13 @@
 
 ## Installation
 ```bash
-$ npm install clone
+npm install clone
 ```
 
 or
 
 ```bash
-# npm install -g clone
+npm install -g clone
 ```
 
 ## Example
