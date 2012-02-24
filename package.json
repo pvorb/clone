@@ -1,8 +1,14 @@
 {
   "name": "clone",
   "description": "deep cloning of objects and arrays",
-  "tags": [ "clone", "object", "array", "function", "date" ],
-  "version": "0.0.4",
+  "tags": [
+    "clone",
+    "object",
+    "array",
+    "function",
+    "date"
+  ],
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/pvorb/node-clone.git"
@@ -19,5 +25,8 @@
   ],
   "engines": {
     "node": "*"
-  }
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {}
 }
