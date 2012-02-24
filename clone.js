@@ -62,7 +62,9 @@ function clone(parent, circular) {
        circular references for it */
     for(i in circularReplace) {
       var c = circularReplace[i];
-      c.child[c.i] = circularResolved[c.resolveTo];
+      if (c && c.child && c.i in c.child) {
+        c.child[c.i] = circularResolved[c.resolveTo];
+      }
     }
     return cloned;
   }
