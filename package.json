@@ -1,5 +1,4 @@
 {
-  "author": "Paul Vorbach <paul@vorb.de> (http://vorb.de)",
   "name": "clone",
   "description": "deep cloning of objects and arrays",
   "tags": [ "clone", "object", "array", "function", "date" ],
@@ -12,9 +11,11 @@
     "url": "https://github.com/pvorb/node-clone/issues"
   },
   "main": "clone.js",
+  "author": "Paul Vorbach <paul@vorb.de> (http://vorb.de)",
   "contributors": [
-    "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com)",
-    "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)"
+    "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
+    "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)",
+    "George Stagas <gstagas@gmail.com> (http://stagas.com/)"
   ],
   "engines": {
     "node": "*"
