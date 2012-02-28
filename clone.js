@@ -17,6 +17,7 @@ module.exports = clone;
 function clone(parent, circular) {
   if (typeof circular == 'undefined')
     circular = true;
+  var i;
   if (circular) {
     var circularParent = {};
     var circularResolved = {};
