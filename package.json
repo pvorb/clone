@@ -21,7 +21,8 @@
   "contributors": [
     "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
     "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)",
-    "George Stagas <gstagas@gmail.com> (http://stagas.com/)"
+    "George Stagas <gstagas@gmail.com> (http://stagas.com/)",
+    "Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik)"
   ],
   "engines": {
     "node": "*"
