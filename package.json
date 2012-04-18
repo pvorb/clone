@@ -29,10 +29,11 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "underscore": "*"
+    "underscore": "*",
+    "nodeunit": "*"
   },
   "optionalDependencies": {},
   "scripts": {
-    "test": "node test.js"
+    "test": "./node_modules/nodeunit/bin/nodeunit ./test.js"
   }
 }

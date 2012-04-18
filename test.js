@@ -1,74 +1,113 @@
-var clone = require("./"),
-        _ = require('underscore');
+if(module.parent === null) {
+  console.log('Run this test file with nodeunit:');
+  console.log('$ nodeunit test.js');
+}
 
-var a, b;
 
-// string test
-a = "foo";
-b = clone(a);
+var clone = require('./'),
+    util = require('util'),
+    _ = require('underscore');
 
-if (_(a).isEqual(b))
-  console.log("passed string test");
-else
-  console.log("failed string test");
 
-// number test
-a = 0;
-b = clone(a);
 
-if (_(a).isEqual(b))
-  console.log("passed number test");
-else
-  console.log("failed number test");
+exports["clone string"] = function(test) {
+  test.expect(2); // how many tests?
 
-// date test
-a = new Date();
-b = clone(a);
+  var a = "foo";
+  test.strictEqual(clone(a), a);
+  a = "";
+  test.strictEqual(clone(a), a);
 
-if (_(a).isEqual(b))
-  console.log("passed date test");
-else
-  console.log("failed date test");
-  delete refDate;
-
-// object test
-a = { foo: { bar: "baz" } }
-b = clone(a);
-
-if (_(a).isEqual(b))
-  console.log("passed object test");
-else
-  console.log("failed object test");
-
-// array test
-a = [
-  { foo: "bar" },
-  "baz"
-];
-b = clone(a);
-
-if (_(a).isEqual(b))
-  console.log("passed array test");
-else
-  console.log("failed array test");
-
-// extended array test
-a = {
-  arr1: [ { a: '1234', b: '2345' } ],
-  arr2: [ { c: '345', d: '456' } ]
+  test.done();
 };
-b = clone(a);
-
-if (_(a).isEqual(b))
-  console.log("passed extended array test");
-else
-  console.log("failed extended array test");
 
 
-function test()
-{
-  var util = require('util');
-  var _ = console.assert;
+
+exports["clone number"] = function(test) {
+  test.expect(5); // how many tests?
+
+  var a = 0;
+  test.strictEqual(clone(a), a);
+  a = 1;
+  test.strictEqual(clone(a), a);
+  a = -1000;
+  test.strictEqual(clone(a), a);
+  a = 3.1415927;
+  test.strictEqual(clone(a), a);
+  a = -3.1415927;
+  test.strictEqual(clone(a), a);
+
+  test.done();
+};
+
+
+
+exports["clone date"] = function(test) {
+  test.expect(3); // how many tests?
+
+  var a = new Date;
+  var c = clone(a);
+  test.ok(a instanceof Date);
+  test.ok(c instanceof Date);
+  test.equal(c.getTime(), a.getTime());
+
+  test.done();
+};
+
+
+
+exports["clone object"] = function(test) {
+  test.expect(2); // how many tests?
+
+  var a = { foo: { bar: "baz" } };
+  var b = clone(a);
+
+  test.ok(_(a).isEqual(b), "underscore equal");
+  test.deepEqual(b, a);
+
+  test.done();
+};
+
+
+
+exports["clone array"] = function(test) {
+  test.expect(2); // how many tests?
+
+  var a = [
+    { foo: "bar" },
+    "baz"
+  ];
+  var b = clone(a);
+
+  test.ok(_(a).isEqual(b), "underscore equal");
+  test.deepEqual(b, a);
+
+  test.done();
+};
+
+
+
+exports["clone object containing array"] = function(test) {
+  test.expect(2); // how many tests?
+
+  var a = {
+    arr1: [ { a: '1234', b: '2345' } ],
+    arr2: [ { c: '345', d: '456' } ]
+  };
+  var b = clone(a);
+
+  test.ok(_(a).isEqual(b), "underscore equal");
+  test.deepEqual(b, a);
+
+  test.done();
+};
+
+
+
+exports["clone object with circular reference"] = function(test) {
+  test.expect(8); // how many tests?
+
+  var _ = test.ok;
   var c = [1, "foo", {'hello': 'bar'}, function() {}, false, [2]];
   var b = [c, 2, 3, 4];
   var a = {'b': b, 'c': c};
@@ -83,19 +122,20 @@ function test()
   _(aCopy.c.loop.loop.aloop == aCopy);
   _(aCopy.c[0] == a.c[0]);
   
-  console.log(util.inspect(aCopy, true, null) );
-  console.log("------------------------------------------------------------");
-  console.log(util.inspect(a, true, null) );
+  //console.log(util.inspect(aCopy, true, null) );
+  //console.log("------------------------------------------------------------");
+  //console.log(util.inspect(a, true, null) );
   _(eq(a, aCopy));
   aCopy.c[0] = 2;
   _(!eq(a, aCopy));
   aCopy.c = "2";
   _(!eq(a, aCopy));
-  console.log("------------------------------------------------------------");
-  console.log(util.inspect(aCopy, true, null) );
+  //console.log("------------------------------------------------------------");
+  //console.log(util.inspect(aCopy, true, null) );
 
   function eq(x, y) {
     return util.inspect(x, true, null) === util.inspect(y, true, null);
   }
-}
-test();
+
+  test.done();
+};
