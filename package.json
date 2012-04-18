@@ -28,6 +28,11 @@
     "node": "*"
   },
   "dependencies": {},
-  "devDependencies": {},
-  "optionalDependencies": {}
+  "devDependencies": {
+    "underscore": "*"
+  },
+  "optionalDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  }
 }
