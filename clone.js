@@ -104,3 +104,7 @@ function clone(parent, circular) {
     return child;
   }
 }
+
+
+/** see: prototypeclone.js */
+clone.prototypeClone = require('./prototypeclone.js');

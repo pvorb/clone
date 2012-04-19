@@ -139,3 +139,22 @@ exports["clone object with circular reference"] = function(test) {
 
   test.done();
 };
+
+
+
+exports['prototypeClone'] = function(test) {
+  test.expect(3); // how many tests?
+
+  var a = {
+    a: "aaa",
+    x: 123,
+    y: 45.65
+  };
+  var b = clone.prototypeClone(a);
+
+  test.strictEqual(b.a, a.a);
+  test.strictEqual(b.x, a.x);
+  test.strictEqual(b.y, a.y);
+
+  test.done();
+}
