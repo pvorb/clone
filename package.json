@@ -8,7 +8,7 @@
     "function",
     "date"
   ],
-  "version": "0.0.6",
+  "version": "0.0.7",
   "repository": {
     "type": "git",
     "url": "git://github.com/pvorb/node-clone.git"
@@ -22,7 +22,8 @@
     "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
     "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)",
     "George Stagas <gstagas@gmail.com> (http://stagas.com/)",
-    "Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik)"
+    "Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik)",
+    "Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel)"
   ],
   "engines": {
     "node": "*"
