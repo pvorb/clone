@@ -1,7 +1,7 @@
 module.exports = clone;
 
 /**
- * Clones an Object using deep cloning.
+ * Clones (copies) an Object using deep copying.
  *
  * This function supports circular references by default, but if you are certain
  * there are no circular references in your object, you can save some CPU time
@@ -61,7 +61,7 @@ function clone(parent, circular) {
         circularResolved[context] = child;
       }
       else
-        child = parent; //Just a simple shallow clone will do
+        child = parent; //Just a simple shallow copy will do
       return child;
     }
 
@@ -105,6 +105,5 @@ function clone(parent, circular) {
   }
 }
 
-
-/** see: prototypeclone.js */
-clone.prototypeClone = require('./prototypeclone.js');
+// see: prototypeClone.js
+clone.prototypeClone = require('./prototypeClone.js');
