@@ -121,7 +121,7 @@ exports["clone object with circular reference"] = function(test) {
   _(aCopy.c == aCopy.b[0]);
   _(aCopy.c.loop.loop.aloop == aCopy);
   _(aCopy.c[0] == a.c[0]);
-  
+
   //console.log(util.inspect(aCopy, true, null) );
   //console.log("------------------------------------------------------------");
   //console.log(util.inspect(a, true, null) );
@@ -142,7 +142,7 @@ exports["clone object with circular reference"] = function(test) {
 
 
 
-exports['prototypeClone'] = function(test) {
+exports['clonePrototype'] = function(test) {
   test.expect(3); // how many tests?
 
   var a = {
@@ -150,7 +150,7 @@ exports['prototypeClone'] = function(test) {
     x: 123,
     y: 45.65
   };
-  var b = clone.prototypeClone(a);
+  var b = clone.clonePrototype(a);
 
   test.strictEqual(b.a, a.a);
   test.strictEqual(b.x, a.x);
