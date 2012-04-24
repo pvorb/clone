@@ -105,5 +105,5 @@ function clone(parent, circular) {
   }
 }
 
-// see: prototypeClone.js
-clone.prototypeClone = require('./prototypeClone.js');
+// see: clonePrototype.js
+clone.clonePrototype = require('./clonePrototype.js');

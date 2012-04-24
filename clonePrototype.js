@@ -5,7 +5,7 @@
  * USE WITH CAUTION! This may not behave as you wish if you do not know how this
  * works.
  */
-function prototypeClone(parent) {
+function clonePrototype(parent) {
   if (parent === null)
     return null;
 
@@ -14,4 +14,4 @@ function prototypeClone(parent) {
   return new ctor();
 }
 
-module.exports = prototypeClone;
+module.exports = clonePrototype;
