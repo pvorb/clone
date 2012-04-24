@@ -39,6 +39,11 @@ Call `clone` with `circular` set to `false` if you are certain that `obj`
 contains no circular references. This will give better performance if needed.
 There is no error if `undefined` or `null` is passed as `obj`.
 
+`clone.clonePrototype(obj)`
+
+Does a prototype clone as
+[described by Oran Looney](http://oranlooney.com/functional-javascript/).
+
 ## Circular References
 
 ```js
