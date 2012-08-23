@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/pvorb/node-clone.png)](http://travis-ci.org/pvorb/node-clone)
 # clone
 
 offers foolproof _deep_ cloning of variables in JavaScript.
