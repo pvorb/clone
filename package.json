@@ -35,6 +35,6 @@
   },
   "optionalDependencies": {},
   "scripts": {
-    "test": "./node_modules/nodeunit/bin/nodeunit ./test.js"
+    "test": "nodeunit test.js"
   }
 }

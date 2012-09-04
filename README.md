@@ -4,9 +4,11 @@ offers foolproof _deep_ cloning of variables in JavaScript.
 
 ## Installation
 
-```
-npm install clone
-```
+    npm install clone
+
+or
+
+    ender build clone
 
 ## Example
 
@@ -14,59 +16,76 @@ npm install clone
 var clone = require('clone');
 
 var a, b;
-a = { foo: { bar: 'baz' } };
-b = clone(a);
-a.foo.bar = 'foo';
 
-console.log(b);
+a = { foo: { bar: 'baz' } };  // inital value of a
+
+b = clone(a);                 // clone a -> b
+a.foo.bar = 'foo';            // change a
+
+console.log(a);               // show a
+console.log(b);               // show b
 ```
 
 This will print:
 
-```js
+~~~ javascript
+{ foo: { bar: 'foo' } }
 { foo: { bar: 'baz' } }
-```
+~~~
 
 **clone** masters cloning simple objects (even with custom prototype), arrays,
-Date objects, and RegEx objects. Everything is cloned recursively, so that you
+Date objects, and RegExp objects. Everything is cloned recursively, so that you
 can clone dates in arrays in objects, for example.
 
 ## API
 
-`clone(obj, circular)`
+`clone(val, circular)`
 
-Call `clone` with `circular` set to `false` if you are certain that `obj`
-contains no circular references. This will give better performance if needed.
-There is no error if `undefined` or `null` is passed as `obj`.
+  * `val` -- the value that you want to clone, any type allowed
+  * `circular` -- boolean
+
+    Call `clone` with `circular` set to `false` if you are certain that `obj`
+    contains no circular references. This will give better performance if needed.
+    There is no error if `undefined` or `null` is passed as `obj`.
 
 `clone.clonePrototype(obj)`
+
+  * `obj` -- the object that you want to clone
 
 Does a prototype clone as
 [described by Oran Looney](http://oranlooney.com/functional-javascript/).
 
 ## Circular References
 
-```js
+~~~ javascript
 var a, b;
+
 a = { hello: 'world' };
+
 a.myself = a;
 b = clone(a);
 
 console.log(b);
-```
+~~~
 
 This will print:
 
-```
+~~~ javascript
 { hello: "world", myself: [Circular] }
-```
+~~~
 
 So, `b.myself` points to `b`, not `a`. Neat!
 
+## Test
+
+    npm test
+
 ## Bugs and Issues
 
-If you encounter any bugs or issues, feel free to open an issue at
-[github](https://github.com/pvorb/node-clone/issues).
+If you encounter any bugs or issues, feel free to
+[open an issue at github](https://github.com/pvorb/node-clone/issues) or send me
+an email to <paul@vorb.de>. I also always like to hear from you, if you’re using
+my code.
 
 ## License
 
