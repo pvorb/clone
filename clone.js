@@ -23,6 +23,7 @@ function clone(parent, circular) {
     var circularResolved = {};
     var circularReplace = [];
     function _clone(parent, context, child, cIndex) {
+      var i; // Use local context within this function
       // Deep clone all properties of parent into child
       if (typeof parent == 'object') {
         if (parent == null)
