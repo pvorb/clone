@@ -158,3 +158,14 @@ exports['clonePrototype'] = function(test) {
 
   test.done();
 }
+
+exports['cloneWithinNewVMContext'] = function(test) {
+  var vm = require('vm');
+  var ctx = vm.createContext({ clone: clone });
+  var script = "clone( {array: [1, 2, 3], date: new Date(), regex: /^foo$/ig} );";
+  var results = vm.runInContext(script, ctx);
+  test.ok(results.array instanceof Array);
+  test.ok(results.date instanceof Date);
+  test.ok(results.regex instanceof RegExp);
+  test.done();
+}
