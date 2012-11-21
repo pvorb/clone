@@ -40,14 +40,14 @@ function clone(parent, circular) {
         // Add to list of all parent objects
         circularParent[context] = parent;
         // Now continue cloning...
-        if (parent instanceof Array) {
+        if (parent.constructor.name === 'Array') {
           child = [];
           for(i in parent)
             child[i] = _clone(parent[i], context + '[' + i + ']', child, i);
         }
-        else if (parent instanceof Date)
+        else if (parent.constructor.name === 'Date')
           child = new Date(parent.getTime());
-        else if (parent instanceof RegExp)
+        else if (parent.constructor.name === 'RegExp')
           child = new RegExp(parent.source);
         else {
           child = {};
@@ -84,14 +84,14 @@ function clone(parent, circular) {
     if (typeof parent == 'object') {
       if (parent == null)
         return parent;
-      if (parent instanceof Array) {
+      if (parent.constructor.name === 'Array') {
         child = [];
         for(i in parent)
           child[i] = clone(parent[i], circular);
       }
-      else if (parent instanceof Date)
+      else if (parent.constructor.name === 'Date')
         child = new Date(parent.getTime() );
-      else if (parent instanceof RegExp)
+      else if (parent.constructor.name === 'RegExp')
         child = new RegExp(parent.source);
       else {
         child = {};
