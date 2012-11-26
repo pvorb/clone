@@ -1,3 +1,5 @@
+var util = require('util');
+
 module.exports = clone;
 
 /**
@@ -40,14 +42,14 @@ function clone(parent, circular) {
         // Add to list of all parent objects
         circularParent[context] = parent;
         // Now continue cloning...
-        if (parent.constructor.name === 'Array') {
+        if (util.isArray(parent)) {
           child = [];
           for(i in parent)
             child[i] = _clone(parent[i], context + '[' + i + ']', child, i);
         }
-        else if (parent.constructor.name === 'Date')
+        else if (util.isDate(parent))
           child = new Date(parent.getTime());
-        else if (parent.constructor.name === 'RegExp')
+        else if (util.isRegExp(parent))
           child = new RegExp(parent.source);
         else {
           child = {};
@@ -89,9 +91,9 @@ function clone(parent, circular) {
         for(i in parent)
           child[i] = clone(parent[i], circular);
       }
-      else if (parent.constructor.name === 'Date')
+      else if (util.isDate(parent))
         child = new Date(parent.getTime() );
-      else if (parent.constructor.name === 'RegExp')
+      else if (util.isRegExp(parent))
         child = new RegExp(parent.source);
       else {
         child = {};
