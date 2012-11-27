@@ -160,6 +160,7 @@ exports['clonePrototype'] = function(test) {
 }
 
 exports['cloneWithinNewVMContext'] = function(test) {
+  test.expect(3);
   var vm = require('vm');
   var ctx = vm.createContext({ clone: clone });
   var script = "clone( {array: [1, 2, 3], date: new Date(), regex: /^foo$/ig} );";
@@ -167,5 +168,17 @@ exports['cloneWithinNewVMContext'] = function(test) {
   test.ok(results.array instanceof Array);
   test.ok(results.date instanceof Date);
   test.ok(results.regex instanceof RegExp);
+  test.done();
+}
+
+exports['cloneObjectWithNoConstructor'] = function(test) {
+  test.expect(3);
+  var n = null;
+  var a = { foo: 'bar' };
+  a.__proto__ = n;
+  test.ok(typeof a === 'object');
+  test.ok(typeof a !== null);
+  var b = clone(a);
+  test.ok(a.foo, b.foo);
   test.done();
 }
