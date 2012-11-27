@@ -23,7 +23,8 @@
     "Tian You <axqd001@gmail.com> (http://blog.axqd.net/)",
     "George Stagas <gstagas@gmail.com> (http://stagas.com/)",
     "Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik)",
-    "Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel)"
+    "Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel)",
+    "Dan MacTough (http://yabfog.com/)"
   ],
   "engines": {
     "node": "*"
