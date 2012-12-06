@@ -24,7 +24,8 @@
     "George Stagas <gstagas@gmail.com> (http://stagas.com/)",
     "Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik)",
     "Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel)",
-    "Dan MacTough (http://yabfog.com/)"
+    "Dan MacTough (http://yabfog.com/)",
+    "w1nk (https://github.com/w1nk)"
   ],
   "engines": {
     "node": "*"
