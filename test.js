@@ -4,9 +4,9 @@ if(module.parent === null) {
 }
 
 
-var clone = require('./'),
-    util = require('util'),
-    _ = require('underscore');
+var clone = require('./');
+var util = require('util');
+var _ = require('underscore');
 
 
 
@@ -90,7 +90,7 @@ exports["clone buffer"] = function(test) {
 
   var a = new Buffer("this is a test buffer");
   var b = clone(a);
-    
+
   // no underscore equal since it has no concept of Buffers
   test.deepEqual(b, a);
   test.done();
