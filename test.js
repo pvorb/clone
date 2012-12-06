@@ -85,7 +85,16 @@ exports["clone array"] = function(test) {
   test.done();
 };
 
+exports["clone buffer"] = function(test) {
+  test.expect(1);
 
+  var a = new Buffer("this is a test buffer");
+  var b = clone(a);
+    
+  // no underscore equal since it has no concept of Buffers
+  test.deepEqual(b, a);
+  test.done();
+};
 
 exports["clone object containing array"] = function(test) {
   test.expect(2); // how many tests?
