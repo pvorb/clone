@@ -51,7 +51,7 @@ function clone(parent, circular) {
           child = new Date(parent.getTime());
         else if (util.isRegExp(parent))
           child = new RegExp(parent.source);
-        else if (Buffer.isBuffer())
+        else if (Buffer.isBuffer(parent))
         {
           child = new Buffer(parent.length);
           parent.copy(child);
