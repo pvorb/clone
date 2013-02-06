@@ -2,7 +2,8 @@
 
 [![build status](https://secure.travis-ci.org/pvorb/node-clone.png)](http://travis-ci.org/pvorb/node-clone)
 
-offers foolproof _deep_ cloning of variables in JavaScript.
+offers foolproof _deep cloning_ of variables in JavaScript.
+
 
 ## Installation
 
@@ -12,9 +13,10 @@ or
 
     ender build clone
 
+
 ## Example
 
-```js
+~~~ javascript
 var clone = require('clone');
 
 var a, b;
@@ -26,7 +28,7 @@ a.foo.bar = 'foo';            // change a
 
 console.log(a);               // show a
 console.log(b);               // show b
-```
+~~~
 
 This will print:
 
@@ -38,6 +40,7 @@ This will print:
 **clone** masters cloning simple objects (even with custom prototype), arrays,
 Date objects, and RegExp objects. Everything is cloned recursively, so that you
 can clone dates in arrays in objects, for example.
+
 
 ## API
 
@@ -56,6 +59,7 @@ can clone dates in arrays in objects, for example.
 
 Does a prototype clone as
 [described by Oran Looney](http://oranlooney.com/functional-javascript/).
+
 
 ## Circular References
 
@@ -78,9 +82,18 @@ This will print:
 
 So, `b.myself` points to `b`, not `a`. Neat!
 
+
 ## Test
 
     npm test
+
+
+## Caveat
+
+Some special objects like a socket or `process.stdout`/`stderr` are known to not
+be cloneable. If you find other objects that cannot be cloned, please [open an
+issue](https://github.com/pvorb/node-clone/issues/new).
+
 
 ## Bugs and Issues
 
@@ -91,7 +104,7 @@ my code.
 
 ## License
 
-Copyright © 2011-2012 Paul Vorbach
+Copyright © 2011-2013 Paul Vorbach
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the “Software”), to deal in
