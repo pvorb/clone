@@ -19,7 +19,9 @@ module.exports = clone;
 function clone(parent, circular) {
   if (typeof circular == 'undefined')
     circular = true;
-  var useBuffer = 'undefined' !== typeof Buffer;
+
+  var useBuffer = typeof Buffer != 'undefined';
+
   var i;
   if (circular) {
     var circularParent = {};
