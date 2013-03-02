@@ -19,6 +19,7 @@ module.exports = clone;
 function clone(parent, circular) {
   if (typeof circular == 'undefined')
     circular = true;
+  var useBuffer = 'undefined' !== typeof Buffer;
   var i;
   if (circular) {
     var circularParent = {};
@@ -51,7 +52,7 @@ function clone(parent, circular) {
           child = new Date(parent.getTime());
         else if (util.isRegExp(parent))
           child = new RegExp(parent.source);
-        else if (Buffer.isBuffer(parent))
+        else if (useBuffer && Buffer.isBuffer(parent))
         {
           child = new Buffer(parent.length);
           parent.copy(child);
