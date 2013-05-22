@@ -1,6 +1,18 @@
 "use strict";
-
-var util = require('util');
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+var util = {
+  isArray: function (ar) {
+    return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
+  },
+  isDate: function (d) {
+    return typeof d === 'object' && objectToString(d) === '[object Date]';
+  },
+  isRegExp: function (re) {
+    return typeof re === 'object' && objectToString(re) === '[object RegExp]';
+  }
+};
 
 module.exports = clone;
 
