@@ -2,6 +2,7 @@
 function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
+
 var util = {
   isArray: function (ar) {
     return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
@@ -130,5 +131,18 @@ function clone(parent, circular) {
   }
 }
 
-// see: clonePrototype.js
-clone.clonePrototype = require('./clonePrototype.js');
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function(parent) {
+  if (parent === null)
+    return null;
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
