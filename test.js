@@ -96,6 +96,30 @@ exports["clone buffer"] = function(test) {
   test.done();
 };
 
+
+
+exports["clone regexp"] = function(test) {
+  test.expect(5);
+
+  var a = /abc123/gi;
+  var b = clone(a);
+
+  test.deepEqual(b, a);
+
+  var c = /a/g;
+  test.ok(c.lastIndex === 0);
+
+  c.exec('123a456a');
+  test.ok(c.lastIndex === 4);
+
+  var d = clone(c);
+  test.ok(d.global);
+  test.ok(d.lastIndex === 4);
+
+  test.done();
+};
+
+
 exports["clone object containing array"] = function(test) {
   test.expect(2); // how many tests?
 

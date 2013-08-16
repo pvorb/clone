@@ -12,6 +12,13 @@ var util = {
   },
   isRegExp: function (re) {
     return typeof re === 'object' && objectToString(re) === '[object RegExp]';
+  },
+  getRegExpFlags: function (re) {
+    var flags = '';
+    re.global && (flags += 'g');
+    re.ignoreCase && (flags += 'i');
+    re.multiline && (flags += 'm');
+    return flags;
   }
 };
 
@@ -66,9 +73,10 @@ function clone(parent, circular) {
       }
       else if (util.isDate(parent))
         child = new Date(parent.getTime());
-      else if (util.isRegExp(parent))
-        child = new RegExp(parent.source);
-      else if (useBuffer && Buffer.isBuffer(parent))
+      else if (util.isRegExp(parent)) {
+        child = new RegExp(parent.source, util.getRegExpFlags(parent));
+        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+      } else if (useBuffer && Buffer.isBuffer(parent))
       {
         child = new Buffer(parent.length);
         parent.copy(child);
@@ -116,9 +124,10 @@ function clone(parent, circular) {
       }
       else if (util.isDate(parent))
         child = new Date(parent.getTime() );
-      else if (util.isRegExp(parent))
-        child = new RegExp(parent.source);
-      else {
+      else if (util.isRegExp(parent)) {
+        child = new RegExp(parent.source, util.getRegExpFlags(parent));
+        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+      } else {
         child = {};
         child.__proto__ = parent.__proto__;
         for(i in parent)
