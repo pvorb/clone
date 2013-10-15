@@ -22,7 +22,8 @@ var util = {
   }
 };
 
-module.exports = clone;
+if(window.module)
+  module.exports = clone;
 
 /**
  * Clones (copies) an Object using deep copying.
