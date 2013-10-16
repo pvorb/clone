@@ -1,4 +1,5 @@
 "use strict";
+
 function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
@@ -22,7 +23,7 @@ var util = {
   }
 };
 
-if(window.module)
+if (typeof module === 'object')
   module.exports = clone;
 
 /**
