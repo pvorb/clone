@@ -215,3 +215,24 @@ exports['cloneObjectWithNoConstructor'] = function(test) {
   test.ok(a.foo, b.foo);
   test.done();
 }
+
+exports['clone object with depth argument'] = function (test) {
+    test.expect(6);
+    var a = {
+        foo: {
+            bar : {
+                baz : 'qux'
+            }
+        }
+    };
+    var b = clone(a, false, 1);
+    test.deepEqual(b, a);
+    test.notEqual(b, a);
+    test.strictEqual(b.foo, a.foo);
+
+    b = clone(a, false, 2);
+    test.deepEqual(b, a);
+    test.notEqual(b.foo, a.foo);
+    test.strictEqual(b.foo.bar, a.foo.bar);
+    test.done();
+}
