@@ -245,3 +245,18 @@ exports['maintain prototype chain in clones'] = function (test) {
   test.strictEqual(Object.getPrototypeOf(a), Object.getPrototypeOf(b));
   test.done();
 }
+
+exports['clone object with null children'] = function(test) {
+  test.expect(1);
+  var a = {
+    foo: {
+      bar: null,
+      baz: {
+        qux: false
+      }
+    }
+  };
+  var b = clone(a);
+  test.deepEqual(b, a);
+  test.done();
+}
