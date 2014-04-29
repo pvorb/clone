@@ -71,7 +71,7 @@ function clone(parent, circular, depth) {
       child = new Buffer(parent.length);
       parent.copy(child);
     } else {
-      child = {};
+      child = Object.create(Object.getPrototypeOf(parent));
     }
     if (circular) {
       var index = allParents.indexOf(parent);

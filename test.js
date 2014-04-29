@@ -236,3 +236,12 @@ exports['clone object with depth argument'] = function (test) {
   test.strictEqual(b.foo.bar, a.foo.bar);
   test.done();
 }
+
+exports['maintain prototype chain in clones'] = function (test) {
+  test.expect(1);
+  function Constructor() {}
+  var a = new Constructor();
+  var b = clone(a);
+  test.strictEqual(Object.getPrototypeOf(a), Object.getPrototypeOf(b));
+  test.done();
+}
