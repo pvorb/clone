@@ -1,27 +1,18 @@
 "use strict";
 
+var util = require("util");
+
 function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-var util = {
-  isArray: function (ar) {
-    return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
-  },
-  isDate: function (d) {
-    return typeof d === 'object' && objectToString(d) === '[object Date]';
-  },
-  isRegExp: function (re) {
-    return typeof re === 'object' && objectToString(re) === '[object RegExp]';
-  },
-  getRegExpFlags: function (re) {
-    var flags = '';
-    re.global && (flags += 'g');
-    re.ignoreCase && (flags += 'i');
-    re.multiline && (flags += 'm');
-    return flags;
-  }
-};
+function getRegExpFlags(re) {
+  var flags = '';
+  re.global && (flags += 'g');
+  re.ignoreCase && (flags += 'i');
+  re.multiline && (flags += 'm');
+  return flags;
+}
 
 if (typeof module === 'object')
   module.exports = clone;
@@ -42,110 +33,61 @@ if (typeof module === 'object')
  * @param `depth` - set to a number if the object is only to be cloned to
  *    a particular depth. (optional - defaults to Infinity)
 */
+
 function clone(parent, circular, depth) {
-  if (typeof circular == 'undefined')
-    circular = true;
-  if (typeof depth == 'undefined')
-    depth = Infinity;
-  if (depth === 0)
-    return parent;
+
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
 
   var useBuffer = typeof Buffer != 'undefined';
 
-  var circularParent = {};
-  var circularResolved = {};
-  var circularReplace = [];
+  if (typeof circular == 'undefined')
+    circular = true;
 
-  function _clone(parent, context, child, cIndex) {
-    var i; // Use local context within this function
-    // Deep clone all properties of parent into child
-    if (typeof parent == 'object') {
-      if (parent == null)
-        return parent;
-      // Check for circular references
-      for(i in circularParent)
-        if (circularParent[i] === parent) {
-          // We found a circular reference
-          circularReplace.push({'resolveTo': i, 'child': child, 'i': cIndex});
-          return null; //Just return null for now...
-          // we will resolve circular references later
-        }
+  if (typeof depth == 'undefined')
+    depth = Infinity;
 
-      // Add to list of all parent objects
-      circularParent[context] = parent;
-      // Now continue cloning...
-      if (util.isArray(parent)) {
-        child = [];
-        for(i in parent)
-          child[i] = _clone(parent[i], context + '[' + i + ']', child, i);
-      }
-      else if (util.isDate(parent))
-        child = new Date(parent.getTime());
-      else if (util.isRegExp(parent)) {
-        child = new RegExp(parent.source, util.getRegExpFlags(parent));
-        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-      } else if (useBuffer && Buffer.isBuffer(parent))
-      {
-        child = new Buffer(parent.length);
-        parent.copy(child);
-      }
-      else {
-        child = {};
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
 
-        // Also copy prototype over to new cloned object
-        child.__proto__ = parent.__proto__;
-        for(i in parent)
-          child[i] = _clone(parent[i], context + '[' + i + ']', child, i);
-      }
+    if (depth == 0)
+      return parent;
 
-      // Add to list of all cloned objects
-      circularResolved[context] = child;
-    }
-    else
-      child = parent; //Just a simple shallow copy will do
-    return child;
-  }
-
-  var i;
-  if (circular) {
-    var cloned = _clone(parent, '*');
-
-    // Now this object has been cloned. Let's check to see if there are any
-    // circular references for it
-    for(i in circularReplace) {
-      var c = circularReplace[i];
-      if (c && c.child && c.i in c.child) {
-        c.child[c.i] = circularResolved[c.resolveTo];
-      }
-    }
-    return cloned;
-  } else {
-    // Deep clone all properties of parent into child
     var child;
-    if (typeof parent == 'object') {
-      if (parent == null)
-        return parent;
-      if (parent.constructor.name === 'Array') {
-        child = [];
-        for(i in parent)
-          child[i] = clone(parent[i], circular, depth - 1);
-      }
-      else if (util.isDate(parent))
-        child = new Date(parent.getTime() );
-      else if (util.isRegExp(parent)) {
-        child = new RegExp(parent.source, util.getRegExpFlags(parent));
-        if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-      } else {
-        child = {};
-        child.__proto__ = parent.__proto__;
-        for(i in parent)
-          child[i] = clone(parent[i], circular, depth - 1);
-      }
+    if (typeof parent != 'object') {
+      return parent;
     }
-    else
-      child = parent; // Just a simple shallow clone will do
+    if (util.isArray(parent))
+      child = [];
+    else if (util.isRegExp(parent)) {
+      child = new RegExp(parent.source, getRegExpFlags(parent));
+      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+    }
+    else if (util.isDate(parent))
+      child = new Date(parent.getTime());
+    else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+    } else {
+      child = {};
+    }
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+    for (var i in parent) {
+      child[i] = _clone(parent[i], depth - 1);
+    }
     return child;
   }
+  return _clone(parent, depth);
 }
 
 /**
