@@ -1,18 +1,28 @@
 'use strict';
 
-var util = require('util');
-
 function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-function getRegExpFlags(re) {
-  var flags = '';
-  re.global && (flags += 'g');
-  re.ignoreCase && (flags += 'i');
-  re.multiline && (flags += 'm');
-  return flags;
-}
+var util = {
+  isArray: function (ar) {
+    return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
+  },
+  isDate: function (d) {
+    return typeof d === 'object' && objectToString(d) === '[object Date]';
+  },
+  isRegExp: function (re) {
+    return typeof re === 'object' && objectToString(re) === '[object RegExp]';
+  },
+  getRegExpFlags: function (re) {
+    var flags = '';
+    re.global && (flags += 'g');
+    re.ignoreCase && (flags += 'i');
+    re.multiline && (flags += 'm');
+    return flags;
+  }
+};
+
 
 if (typeof module === 'object')
   module.exports = clone;
@@ -65,7 +75,7 @@ function clone(parent, circular, depth) {
     if (util.isArray(parent)) {
       child = [];
     } else if (util.isRegExp(parent)) {
-      child = new RegExp(parent.source, getRegExpFlags(parent));
+      child = new RegExp(parent.source, util.getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
     } else if (util.isDate(parent)) {
       child = new Date(parent.getTime());
