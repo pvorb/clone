@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var util = require("util");
+var util = require('util');
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -35,7 +35,6 @@ if (typeof module === 'object')
 */
 
 function clone(parent, circular, depth) {
-
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
   var allParents = [];
@@ -51,6 +50,9 @@ function clone(parent, circular, depth) {
 
   // recurse this function so we don't reset allParents and allChildren
   function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      return null;
 
     if (depth == 0)
       return parent;
@@ -59,20 +61,21 @@ function clone(parent, circular, depth) {
     if (typeof parent != 'object') {
       return parent;
     }
-    if (util.isArray(parent))
+
+    if (util.isArray(parent)) {
       child = [];
-    else if (util.isRegExp(parent)) {
+    } else if (util.isRegExp(parent)) {
       child = new RegExp(parent.source, getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    }
-    else if (util.isDate(parent))
+    } else if (util.isDate(parent)) {
       child = new Date(parent.getTime());
-    else if (useBuffer && Buffer.isBuffer(parent)) {
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);
       parent.copy(child);
     } else {
       child = Object.create(Object.getPrototypeOf(parent));
     }
+
     if (circular) {
       var index = allParents.indexOf(parent);
 
@@ -82,11 +85,14 @@ function clone(parent, circular, depth) {
       allParents.push(parent);
       allChildren.push(child);
     }
+
     for (var i in parent) {
       child[i] = _clone(parent[i], depth - 1);
     }
+
     return child;
   }
+
   return _clone(parent, depth);
 }
 
