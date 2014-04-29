@@ -39,10 +39,16 @@ if (typeof module === 'object')
  * @param `parent` - the object to be cloned
  * @param `circular` - set to true if the object to be cloned may contain
  *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
 */
-function clone(parent, circular) {
+function clone(parent, circular, depth) {
   if (typeof circular == 'undefined')
     circular = true;
+  if (typeof depth == 'undefined')
+    depth = Infinity;
+  if (depth === 0)
+    return parent;
 
   var useBuffer = typeof Buffer != 'undefined';
 
@@ -122,7 +128,7 @@ function clone(parent, circular) {
       if (parent.constructor.name === 'Array') {
         child = [];
         for(i in parent)
-          child[i] = clone(parent[i], circular);
+          child[i] = clone(parent[i], circular, depth - 1);
       }
       else if (util.isDate(parent))
         child = new Date(parent.getTime() );
@@ -133,7 +139,7 @@ function clone(parent, circular) {
         child = {};
         child.__proto__ = parent.__proto__;
         for(i in parent)
-          child[i] = clone(parent[i], circular);
+          child[i] = clone(parent[i], circular, depth - 1);
       }
     }
     else
