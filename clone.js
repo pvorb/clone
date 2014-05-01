@@ -4,6 +4,8 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
+// shim for Node's 'util' package
+// DO NOT REMOVE THIS! It is required for compatibility with EnderJS (http://enderjs.com/).
 var util = {
   isArray: function (ar) {
     return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
