@@ -246,6 +246,15 @@ exports['maintain prototype chain in clones'] = function (test) {
   test.done();
 }
 
+exports['parent prototype is overriden with prototype provided'] = function (test) {
+  test.expect(1);
+  function Constructor() {}
+  var a = new Constructor();
+  var b = clone(a, true, Infinity, null);
+  test.strictEqual(b.__defineSetter__, undefined);
+  test.done();
+}
+
 exports['clone object with null children'] = function(test) {
   test.expect(1);
   var a = {
