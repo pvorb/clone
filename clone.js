@@ -44,6 +44,8 @@ if (typeof module === 'object')
  *    circular references. (optional - true by default)
  * @param `depth` - set to a number if the object is only to be cloned to
  *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
 */
 
 function clone(parent, circular, depth, prototype) {
