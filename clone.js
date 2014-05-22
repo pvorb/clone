@@ -46,7 +46,7 @@ if (typeof module === 'object')
  *    a particular depth. (optional - defaults to Infinity)
 */
 
-function clone(parent, circular, depth) {
+function clone(parent, circular, depth, prototype) {
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
   var allParents = [];
@@ -85,7 +85,8 @@ function clone(parent, circular, depth) {
       child = new Buffer(parent.length);
       parent.copy(child);
     } else {
-      child = Object.create(Object.getPrototypeOf(parent));
+      if (prototype) child = Object.create(prototype);
+      else child = Object.create(Object.getPrototypeOf(parent));
     }
 
     if (circular) {
