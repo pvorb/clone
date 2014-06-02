@@ -44,9 +44,11 @@ if (typeof module === 'object')
  *    circular references. (optional - true by default)
  * @param `depth` - set to a number if the object is only to be cloned to
  *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
 */
 
-function clone(parent, circular, depth) {
+function clone(parent, circular, depth, prototype) {
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
   var allParents = [];
@@ -85,7 +87,8 @@ function clone(parent, circular, depth) {
       child = new Buffer(parent.length);
       parent.copy(child);
     } else {
-      child = Object.create(Object.getPrototypeOf(parent));
+      if (typeof prototype == 'undefined') child = Object.create(Object.getPrototypeOf(parent));
+      else child = Object.create(prototype);
     }
 
     if (circular) {
