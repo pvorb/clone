@@ -86,6 +86,7 @@ function clone(parent, circular, depth, prototype) {
     } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);
       parent.copy(child);
+      return child;
     } else {
       if (typeof prototype == 'undefined') child = Object.create(Object.getPrototypeOf(parent));
       else child = Object.create(prototype);
