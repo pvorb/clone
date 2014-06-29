@@ -99,14 +99,13 @@ issue](https://github.com/pvorb/node-clone/issues/new).
 
 ## Bugs and Issues
 
-If you encounter any bugs or issues, feel free to
-[open an issue at github](https://github.com/pvorb/node-clone/issues) or send me
-an email to <paul@vorb.de>. I also always like to hear from you, if you’re using
-my code.
+If you encounter any bugs or issues, feel free to [open an issue at
+github](https://github.com/pvorb/node-clone/issues) or send me an email to
+<paul@vorba.ch>. I also always like to hear from you, if you’re using my code.
 
 ## License
 
-Copyright © 2011-2014 Paul Vorbach and
+Copyright © 2011-2014 [Paul Vorbach](http://paul.vorba.ch/) and
 [contributors](https://github.com/pvorb/node-clone/graphs/contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
