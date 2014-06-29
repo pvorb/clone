@@ -8,7 +8,7 @@
     "function",
     "date"
   ],
-  "version": "0.1.16",
+  "version": "0.1.17",
   "repository": {
     "type": "git",
     "url": "git://github.com/pvorb/node-clone.git"
@@ -30,7 +30,8 @@
     "Dustin Diaz (http://dustindiaz.com)",
     "Ilya Shaisultanov (https://github.com/diversario)",
     "Nathan MacInnes <nathan@macinn.es> (http://macinn.es/)",
-    "Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe)"
+    "Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe)",
+    "Nathan Zadoks (https://github.com/nathan7)"
   ],
   "engines": {
     "node": "*"
