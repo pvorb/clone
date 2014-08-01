@@ -33,6 +33,7 @@
     "Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe)",
     "Nathan Zadoks (https://github.com/nathan7)"
   ],
+  "license": "MIT",
   "engines": {
     "node": "*"
   },
