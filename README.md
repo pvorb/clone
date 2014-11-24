@@ -7,35 +7,38 @@ offers foolproof _deep cloning_ of variables in JavaScript.
 
 ## Installation
 
-    npm install clone
+```sh
+$ npm install clone
+```
 
 or
 
-    ender build clone
-
+```sh
+$ ender build clone
+```
 
 ## Example
 
-~~~ javascript
+```js
 var clone = require('clone');
 
 var a, b;
 
-a = { foo: { bar: 'baz' } };  // inital value of a
+a = { foo: { bar: 'baz' } };  // initial value of a
 
 b = clone(a);                 // clone a -> b
 a.foo.bar = 'foo';            // change a
 
 console.log(a);               // show a
 console.log(b);               // show b
-~~~
+```
 
 This will print:
 
-~~~ javascript
+```js
 { foo: { bar: 'foo' } }
 { foo: { bar: 'baz' } }
-~~~
+```
 
 **clone** masters cloning simple objects (even with custom prototype), arrays,
 Date objects, and RegExp objects. Everything is cloned recursively, so that you
@@ -52,7 +55,7 @@ can clone dates in arrays in objects, for example.
     Call `clone` with `circular` set to `false` if you are certain that `obj`
     contains no circular references. This will give better performance if needed.
     There is no error if `undefined` or `null` is passed as `obj`.
-  * `depth` -- depth to wich the object is to be cloned (optional,
+  * `depth` -- depth to which the object is to be cloned (optional,
     defaults to infinity)
 
 `clone.clonePrototype(obj)`
@@ -65,7 +68,7 @@ Does a prototype clone as
 
 ## Circular References
 
-~~~ javascript
+```js
 var a, b;
 
 a = { hello: 'world' };
@@ -74,13 +77,13 @@ a.myself = a;
 b = clone(a);
 
 console.log(b);
-~~~
+```
 
 This will print:
 
-~~~ javascript
+```js
 { hello: "world", myself: [Circular] }
-~~~
+```
 
 So, `b.myself` points to `b`, not `a`. Neat!
 
