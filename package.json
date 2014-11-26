@@ -31,7 +31,8 @@
     "Ilya Shaisultanov (https://github.com/diversario)",
     "Nathan MacInnes <nathan@macinn.es> (http://macinn.es/)",
     "Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe)",
-    "Nathan Zadoks (https://github.com/nathan7)"
+    "Nathan Zadoks (https://github.com/nathan7)",
+    "Róbert Oroszi <robert+gh@oroszi.net> (https://github.com/oroce)"
   ],
   "license": "MIT",
   "engines": {
