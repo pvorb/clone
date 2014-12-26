@@ -4,27 +4,13 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-// shim for Node's 'util' package
-// DO NOT REMOVE THIS! It is required for compatibility with EnderJS (http://enderjs.com/).
-var util = {
-  isArray: function (ar) {
-    return Array.isArray(ar) || (typeof ar === 'object' && objectToString(ar) === '[object Array]');
-  },
-  isDate: function (d) {
-    return typeof d === 'object' && objectToString(d) === '[object Date]';
-  },
-  isRegExp: function (re) {
-    return typeof re === 'object' && objectToString(re) === '[object RegExp]';
-  },
-  getRegExpFlags: function (re) {
-    var flags = '';
-    re.global && (flags += 'g');
-    re.ignoreCase && (flags += 'i');
-    re.multiline && (flags += 'm');
-    return flags;
-  }
-};
-
+function getRegExpFlags(re) {
+  var flags = '';
+  re.global && (flags += 'g');
+  re.ignoreCase && (flags += 'i');
+  re.multiline && (flags += 'm');
+  return flags;
+}
 
 if (typeof module === 'object')
   module.exports = clone;
@@ -77,12 +63,12 @@ function clone(parent, circular, depth, prototype) {
       return parent;
     }
 
-    if (util.isArray(parent)) {
+    if (parent instanceof Array) {
       child = [];
-    } else if (util.isRegExp(parent)) {
-      child = new RegExp(parent.source, util.getRegExpFlags(parent));
+    } else if (parent instanceof RegExp) {
+      child = new RegExp(parent.source, getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (util.isDate(parent)) {
+    } else if (parent instanceof Date) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);

@@ -5,9 +5,18 @@ if(module.parent === null) {
 
 
 var clone = require('./');
-var util = require('util');
 var _ = require('underscore');
 
+function inspect(obj) {
+  seen = [];
+  return JSON.stringify(obj, function(key, val) {
+    if (val != null && typeof val == "object") {
+	    if (seen.indexOf(val) >= 0) return '[cyclic]'
+	    seen.push(val)
+    }
+    return val
+  });
+}
 
 
 exports["clone string"] = function(test) {
@@ -71,7 +80,7 @@ exports["clone object"] = function(test) {
 
 
 exports["clone array"] = function(test) {
-  test.expect(2); // how many tests?
+  test.expect(3); // how many tests?
 
   var a = [
     { foo: "bar" },
@@ -80,12 +89,15 @@ exports["clone array"] = function(test) {
   var b = clone(a);
 
   test.ok(_(a).isEqual(b), "underscore equal");
+  test.ok(b instanceof Array);
   test.deepEqual(b, a);
 
   test.done();
 };
 
 exports["clone buffer"] = function(test) {
+  if (typeof Buffer == 'undefined') return test.done();
+
   test.expect(1);
 
   var a = new Buffer("this is a test buffer");
@@ -140,7 +152,6 @@ exports["clone object containing array"] = function(test) {
 exports["clone object with circular reference"] = function(test) {
   test.expect(8); // how many tests?
 
-  var _ = test.ok;
   var c = [1, "foo", {'hello': 'bar'}, function() {}, false, [2]];
   var b = [c, 2, 3, 4];
   var a = {'b': b, 'c': c};
@@ -149,25 +160,25 @@ exports["clone object with circular reference"] = function(test) {
   c.loop = c;
   c.aloop = a;
   var aCopy = clone(a);
-  _(a != aCopy);
-  _(a.c != aCopy.c);
-  _(aCopy.c == aCopy.b[0]);
-  _(aCopy.c.loop.loop.aloop == aCopy);
-  _(aCopy.c[0] == a.c[0]);
+  test.ok(a != aCopy);
+  test.ok(a.c != aCopy.c);
+  test.ok(aCopy.c == aCopy.b[0]);
+  test.ok(aCopy.c.loop.loop.aloop == aCopy);
+  test.ok(aCopy.c[0] == a.c[0]);
 
   //console.log(util.inspect(aCopy, true, null) );
   //console.log("------------------------------------------------------------");
   //console.log(util.inspect(a, true, null) );
-  _(eq(a, aCopy));
+  test.ok(eq(a, aCopy));
   aCopy.c[0] = 2;
-  _(!eq(a, aCopy));
+  test.ok(!eq(a, aCopy));
   aCopy.c = "2";
-  _(!eq(a, aCopy));
+  test.ok(!eq(a, aCopy));
   //console.log("------------------------------------------------------------");
   //console.log(util.inspect(aCopy, true, null) );
 
   function eq(x, y) {
-    return util.inspect(x, true, null) === util.inspect(y, true, null);
+    return inspect(x) === inspect(y);
   }
 
   test.done();
@@ -175,7 +186,7 @@ exports["clone object with circular reference"] = function(test) {
 
 
 
-exports['clonePrototype'] = function(test) {
+exports['clone prototype'] = function(test) {
   test.expect(3); // how many tests?
 
   var a = {
@@ -192,19 +203,20 @@ exports['clonePrototype'] = function(test) {
   test.done();
 }
 
-exports['cloneWithinNewVMContext'] = function(test) {
+exports['clone within new VM context'] = function(test) {
+  var vm = require('vm'), util = require('util');
+  if (!vm) return test.done();
   test.expect(3);
-  var vm = require('vm');
   var ctx = vm.createContext({ clone: clone });
   var script = "clone( {array: [1, 2, 3], date: new Date(), regex: /^foo$/ig} );";
   var results = vm.runInContext(script, ctx);
-  test.ok(results.array instanceof Array);
-  test.ok(results.date instanceof Date);
-  test.ok(results.regex instanceof RegExp);
+  test.ok(results.array.constructor.toString() === Array.toString());
+  test.ok(results.date.constructor.toString() === Date.toString());
+  test.ok(results.regex.constructor.toString() === RegExp.toString());
   test.done();
 }
 
-exports['cloneObjectWithNoConstructor'] = function(test) {
+exports['clone object with no constructor'] = function(test) {
   test.expect(3);
   var n = null;
   var a = { foo: 'bar' };
