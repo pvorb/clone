@@ -11,9 +11,7 @@ offers foolproof _deep cloning_ of variables in JavaScript.
 
     npm install clone
 
-or
-
-    ender build clone
+(It also works with browserify, ender or standalone.)
 
 
 ## Example
