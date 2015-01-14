@@ -30,13 +30,12 @@ function apartContext(context, script, callback) {
     document.body.appendChild(iframe);
     var myCtxId = 'tmpCtx' + Math.random();
     window[myCtxId] = context;
-    iframe.src = 'data:text/html;charset=UTF8,'+ encodeURIComponent(
-      '<script>try { ctx=parent["'+myCtxId+'"];' + script +
-      '; window.results=results; } catch(e) { alert(e); throw e }</script>'
-    );
+    iframe.src = 'test-apart-ctx.html?'+myCtxId+'&'+encodeURIComponent(script);
     iframe.onload = function(){
       try { callback(iframe.contentWindow.results) }
-      catch(e) { alert(e); throw e }
+      catch(e) {
+        alert('Apart Context iFrame data collection fail.\n'+e); throw e
+      }
     };
   } else {
     console.log('WARNING: cant create an apart context (vm.createContext or iframe).');

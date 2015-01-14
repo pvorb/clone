@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Clone Test on Browser</title>
+  </head>
+  <body>
+    <script>
+      var data = document.location.search.substr(1).split('&');
+      try {
+        ctx = parent[data[0]];
+        eval(decodeURIComponent(data[1]));
+        window.results = results;
+      } catch(e) {
+        var extra = '';
+        if ( e.name == 'SecurityError' )
+          extra = '\n\n!!! Try to run this test through a http server. !!!';
+        alert('Apart Context iFrame Error\n'+e+extra);
+        throw e;
+      }
+    </script>
+  </body>
+</html>
