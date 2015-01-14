@@ -4,7 +4,7 @@
 
 [![info badge](https://nodei.co/npm/clone.png?downloads=true&downloadRank=true&stars=true)](http://npm-stat.com/charts.html?package=clone)
 
-offers foolproof _deep cloning_ of values (objects, arrays, numbers, strings etc.) in JavaScript.
+offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in JavaScript.
 
 
 ## Installation
