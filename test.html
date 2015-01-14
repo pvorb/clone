@@ -19,6 +19,8 @@
   </head>
   <body>
     <h1 id="nodeunit-header">Clone Test on Browser</h1>
+    Tests started: <span id="testsStarted"></span>;
+    Tests finished: <span id="testsFinished"></span>.
     <ul id="logList"></ul>
     <script>
       /* Methods copyed from
@@ -85,28 +87,35 @@
       for ( var testName in tests ) {
         setTimeout((function(testName){
           try {
+            testsStarted.innerHTML = (parseInt(testsStarted.innerHTML) || 0) + 1;
+            function incFinished() {
+              testsFinished.innerHTML = (parseInt(testsFinished.innerHTML) || 0) + 1;
+            }
             tests[testName]({
               expect: function(num) { this._expect = num },
-              ok: function(val) { if(!val) throw val + ' is not ok.' },
+              ok: function(val) { if(!val) throw new Error(val + ' is not ok.') },
               equal: function(a,b) {
-                if (a!=b) throw a + ' is not equal to ' + b
+                if (a!=b) throw new Error(a + ' is not equal to ' + b)
               },
               notEqual: function(a,b) {
-                if (a==b) throw a + ' is equal to ' + b
+                if (a==b) throw new Error(a + ' is equal to ' + b)
               },
               strictEqual: function(a,b) {
-                if (a!==b) throw a + ' is not strict equal to ' + b
+                if (a!==b) throw new Error(a + ' is not strict equal to ' + b)
               },
               deepEqual: function(a,b) {
                 if (!_deepEqual(a,b))
-                  throw JSON.stringify(a) + ' is not deep equal to ' + JSON.stringify(b)
+                  throw new Error(JSON.stringify(a) + ' is not deep equal to ' +
+                                  JSON.stringify(b))
               },
               done: function() {
-                log(testName + ' is ok.');
+                log(testName + ' <span style="color:blue">is ok</span>.');
+                incFinished();
               }
             })
           } catch(e) {
-            log(testName + ' <span style="color:red">FAIL.<br>'+ e +'</span>');
+            log(testName + ' <span style="color:red">FAIL.</span> <small>'+ e +'</small>');
+            incFinished();
             console.log(e);
           }
         })(testName), 1);

@@ -48,12 +48,12 @@ function clone(parent, circular, depth, prototype) {
       return parent;
     }
 
-    if (parent instanceof Array) {
+    if (clone.isArray(parent)) {
       child = [];
-    } else if (parent instanceof RegExp) {
+    } else if (clone.isRegExp(parent)) {
       child = new RegExp(parent.source, clone.getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (parent instanceof Date) {
+    } else if (clone.isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);
@@ -125,6 +125,18 @@ clone.getRegExpFlags = function(re) {
   re.multiline && (flags += 'm');
   return flags;
 }
+
+clone.isArray = function (o) {
+  return typeof o === 'object' && clone.objectToString(o) === '[object Array]';
+};
+
+clone.isDate = function (o) {
+  return typeof o === 'object' && clone.objectToString(o) === '[object Date]';
+};
+
+clone.isRegExp = function (o) {
+  return typeof o === 'object' && clone.objectToString(o) === '[object RegExp]';
+};
 
 if (typeof module === 'object')
   module.exports = clone;

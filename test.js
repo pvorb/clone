@@ -17,6 +17,32 @@ function inspect(obj) {
   });
 }
 
+// Creates a new VM in node, or a iframe in a browser to run the script.
+function apartContext(context, script, callback) {
+  var vm = require('vm');
+  if (vm) {
+    var ctx = vm.createContext({ctx: context});
+    callback(vm.runInContext(script, ctx));
+  }
+  else if (document && document.createElement) {
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    var myCtxId = 'tmpCtx' + Math.random();
+    window[myCtxId] = context;
+    iframe.src = 'data:text/html;charset=UTF8,'+ encodeURIComponent(
+      '<script>try { ctx=parent["'+myCtxId+'"];' + script +
+      '; window.results=results; } catch(e) { alert(e); throw e }</script>'
+    );
+    iframe.onload = function(){
+      try { callback(iframe.contentWindow.results) }
+      catch(e) { alert(e); throw e }
+    };
+  } else {
+    console.log('WARNING: cant create an apart context (vm.createContext or iframe).');
+  }
+}
+
 exports["clone string"] = function(test) {
   test.expect(2); // how many tests?
 
@@ -50,9 +76,9 @@ exports["clone date"] = function(test) {
 
   var a = new Date;
   var c = clone(a);
-  test.ok(a instanceof Date);
-  test.ok(c instanceof Date);
-  test.equal(c.getTime(), a.getTime());
+  test.ok(!!a.getUTCDate && !!a.toUTCString);
+  test.ok(!!c.getUTCDate && !!c.toUTCString);
+  test.equal(a.getTime(), c.getTime());
 
   test.done();
 };
@@ -186,17 +212,17 @@ exports['clone prototype'] = function(test) {
   test.done();
 };
 
-exports['clone within new VM context'] = function(test) {
-  var vm = require('vm'), util = require('util');
-  if (!vm) return test.done();
-  test.expect(3);
-  var ctx = vm.createContext({ clone: clone });
-  var script = "clone( {array: [1, 2, 3], date: new Date(), regex: /^foo$/ig} );";
-  var results = vm.runInContext(script, ctx);
-  test.ok(results.array.constructor.toString() === Array.toString());
-  test.ok(results.date.constructor.toString() === Date.toString());
-  test.ok(results.regex.constructor.toString() === RegExp.toString());
-  test.done();
+exports['clone within an apart context'] = function(test) {
+  var results = apartContext(
+    {clone: clone},
+    "results = ctx.clone({ a: [1, 2, 3], d: new Date(), r: /^foo$/ig })",
+    function(results) {
+      test.ok(results.a.constructor.toString() === Array.toString());
+      test.ok(results.d.constructor.toString() === Date.toString());
+      test.ok(results.r.constructor.toString() === RegExp.toString());
+      test.done();
+    }
+  );
 };
 
 exports['clone object with no constructor'] = function(test) {
@@ -290,4 +316,52 @@ exports['get RegExp flags'] = function(test) {
   test.strictEqual(clone.getRegExpFlags(/a/gi), 'gi');
   test.strictEqual(clone.getRegExpFlags(/a/m),  'm' );
   test.done();
+};
+
+exports["recognize Array object"] = function(test) {
+  var results = apartContext(
+    null, "results = [1, 2, 3]",
+    function(alien) {
+      var local = [4, 5, 6];
+      test.ok(clone.isArray(alien)); // recognize in other context.
+      test.ok(clone.isArray(local)); // recognize in local context.
+      test.ok(!clone.isDate(alien));
+      test.ok(!clone.isDate(local));
+      test.ok(!clone.isRegExp(alien));
+      test.ok(!clone.isRegExp(local));
+      test.done();
+    }
+  );
+};
+
+exports["recognize Date object"] = function(test) {
+  var results = apartContext(
+    null, "results = new Date()",
+    function(alien) {
+      var local = new Date();
+      test.ok(clone.isDate(alien)); // recognize in other context.
+      test.ok(clone.isDate(local)); // recognize in local context.
+      test.ok(!clone.isArray(alien));
+      test.ok(!clone.isArray(local));
+      test.ok(!clone.isRegExp(alien));
+      test.ok(!clone.isRegExp(local));
+      test.done();
+    }
+  );
+};
+
+exports["recognize RegExp object"] = function(test) {
+  var results = apartContext(
+    null, "results = /foo/",
+    function(alien) {
+      var local = /bar/;
+      test.ok(clone.isRegExp(alien)); // recognize in other context.
+      test.ok(clone.isRegExp(local)); // recognize in local context.
+      test.ok(!clone.isArray(alien));
+      test.ok(!clone.isArray(local));
+      test.ok(!clone.isDate(alien));
+      test.ok(!clone.isDate(local));
+      test.done();
+    }
+  );
 };
