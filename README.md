@@ -105,7 +105,7 @@ github](https://github.com/pvorb/node-clone/issues) or send me an email to
 
 ## License
 
-Copyright © 2011-2014 [Paul Vorbach](http://paul.vorba.ch/) and
+Copyright © 2011-2015 [Paul Vorbach](http://paul.vorba.ch/) and
 [contributors](https://github.com/pvorb/node-clone/graphs/contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
