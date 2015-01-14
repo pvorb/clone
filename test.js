@@ -3,7 +3,6 @@ if(module.parent === null) {
   console.log('$ nodeunit test.js');
 }
 
-
 var clone = require('./');
 var _ = require('underscore');
 
@@ -18,7 +17,6 @@ function inspect(obj) {
   });
 }
 
-
 exports["clone string"] = function(test) {
   test.expect(2); // how many tests?
 
@@ -29,8 +27,6 @@ exports["clone string"] = function(test) {
 
   test.done();
 };
-
-
 
 exports["clone number"] = function(test) {
   test.expect(5); // how many tests?
@@ -49,8 +45,6 @@ exports["clone number"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone date"] = function(test) {
   test.expect(3); // how many tests?
 
@@ -63,8 +57,6 @@ exports["clone date"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone object"] = function(test) {
   test.expect(2); // how many tests?
 
@@ -76,8 +68,6 @@ exports["clone object"] = function(test) {
 
   test.done();
 };
-
-
 
 exports["clone array"] = function(test) {
   test.expect(3); // how many tests?
@@ -108,8 +98,6 @@ exports["clone buffer"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone regexp"] = function(test) {
   test.expect(5);
 
@@ -131,7 +119,6 @@ exports["clone regexp"] = function(test) {
   test.done();
 };
 
-
 exports["clone object containing array"] = function(test) {
   test.expect(2); // how many tests?
 
@@ -146,8 +133,6 @@ exports["clone object containing array"] = function(test) {
 
   test.done();
 };
-
-
 
 exports["clone object with circular reference"] = function(test) {
   test.expect(8); // how many tests?
@@ -184,8 +169,6 @@ exports["clone object with circular reference"] = function(test) {
   test.done();
 };
 
-
-
 exports['clone prototype'] = function(test) {
   test.expect(3); // how many tests?
 
@@ -201,7 +184,7 @@ exports['clone prototype'] = function(test) {
   test.strictEqual(b.y, a.y);
 
   test.done();
-}
+};
 
 exports['clone within new VM context'] = function(test) {
   var vm = require('vm'), util = require('util');
@@ -214,7 +197,7 @@ exports['clone within new VM context'] = function(test) {
   test.ok(results.date.constructor.toString() === Date.toString());
   test.ok(results.regex.constructor.toString() === RegExp.toString());
   test.done();
-}
+};
 
 exports['clone object with no constructor'] = function(test) {
   test.expect(3);
@@ -226,7 +209,7 @@ exports['clone object with no constructor'] = function(test) {
   var b = clone(a);
   test.ok(a.foo, b.foo);
   test.done();
-}
+};
 
 exports['clone object with depth argument'] = function (test) {
   test.expect(6);
@@ -247,7 +230,7 @@ exports['clone object with depth argument'] = function (test) {
   test.notEqual(b.foo, a.foo);
   test.strictEqual(b.foo.bar, a.foo.bar);
   test.done();
-}
+};
 
 exports['maintain prototype chain in clones'] = function (test) {
   test.expect(1);
@@ -256,7 +239,7 @@ exports['maintain prototype chain in clones'] = function (test) {
   var b = clone(a);
   test.strictEqual(Object.getPrototypeOf(a), Object.getPrototypeOf(b));
   test.done();
-}
+};
 
 exports['parent prototype is overriden with prototype provided'] = function (test) {
   test.expect(1);
@@ -265,7 +248,7 @@ exports['parent prototype is overriden with prototype provided'] = function (tes
   var b = clone(a, true, Infinity, null);
   test.strictEqual(b.__defineSetter__, undefined);
   test.done();
-}
+};
 
 exports['clone object with null children'] = function(test) {
   test.expect(1);
@@ -280,7 +263,7 @@ exports['clone object with null children'] = function(test) {
   var b = clone(a);
   test.deepEqual(b, a);
   test.done();
-}
+};
 
 exports['clone instance with getter'] = function(test) {
   test.expect(1);
@@ -297,5 +280,14 @@ exports['clone instance with getter'] = function(test) {
   var b = clone(a);
 
   test.strictEqual(b.prop, 'value');
+  test.done();
+};
+
+exports['get RegExp flags'] = function(test) {
+  test.strictEqual(clone.getRegExpFlags(/a/),   ''  );
+  test.strictEqual(clone.getRegExpFlags(/a/i),  'i' );
+  test.strictEqual(clone.getRegExpFlags(/a/g),  'g' );
+  test.strictEqual(clone.getRegExpFlags(/a/gi), 'gi');
+  test.strictEqual(clone.getRegExpFlags(/a/m),  'm' );
   test.done();
 };

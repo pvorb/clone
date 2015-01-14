@@ -1,20 +1,5 @@
 'use strict';
 
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-function getRegExpFlags(re) {
-  var flags = '';
-  re.global && (flags += 'g');
-  re.ignoreCase && (flags += 'i');
-  re.multiline && (flags += 'm');
-  return flags;
-}
-
-if (typeof module === 'object')
-  module.exports = clone;
-
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -66,7 +51,7 @@ function clone(parent, circular, depth, prototype) {
     if (parent instanceof Array) {
       child = [];
     } else if (parent instanceof RegExp) {
-      child = new RegExp(parent.source, getRegExpFlags(parent));
+      child = new RegExp(parent.source, clone.getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
     } else if (parent instanceof Date) {
       child = new Date(parent.getTime());
@@ -128,3 +113,19 @@ clone.clonePrototype = function(parent) {
   c.prototype = parent;
   return new c();
 };
+
+clone.objectToString = function(o) {
+  return Object.prototype.toString.call(o);
+}
+
+clone.getRegExpFlags = function(re) {
+  var flags = '';
+  re.global && (flags += 'g');
+  re.ignoreCase && (flags += 'i');
+  re.multiline && (flags += 'm');
+  return flags;
+}
+
+if (typeof module === 'object')
+  module.exports = clone;
+
