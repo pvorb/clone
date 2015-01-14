@@ -1,5 +1,7 @@
 'use strict';
 
+var clone = (function(global) {
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -48,12 +50,12 @@ function clone(parent, circular, depth, prototype) {
       return parent;
     }
 
-    if (clone.isArray(parent)) {
+    if (isArray(parent)) {
       child = [];
-    } else if (clone.isRegExp(parent)) {
+    } else if (isRegExp(parent)) {
       child = new RegExp(parent.source, clone.getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.isDate(parent)) {
+    } else if (isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
       child = new Buffer(parent.length);
@@ -114,11 +116,7 @@ clone.clonePrototype = function(parent) {
   return new c();
 };
 
-clone.objectToString = function(o) {
-  return Object.prototype.toString.call(o);
-}
-
-clone.getRegExpFlags = function(re) {
+function getRegExpFlags(re) {
   var flags = '';
   re.global && (flags += 'g');
   re.ignoreCase && (flags += 'i');
@@ -126,18 +124,32 @@ clone.getRegExpFlags = function(re) {
   return flags;
 }
 
-clone.isArray = function (o) {
-  return typeof o === 'object' && clone.objectToString(o) === '[object Array]';
-};
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
 
-clone.isDate = function (o) {
-  return typeof o === 'object' && clone.objectToString(o) === '[object Date]';
-};
+function isDate(o) {
+  return typeof o === 'object' && objectToString(o) === '[object Date]';
+}
 
-clone.isRegExp = function (o) {
-  return typeof o === 'object' && clone.objectToString(o) === '[object RegExp]';
-};
+function isArray(o) {
+  return typeof o === 'object' && objectToString(o) === '[object Array]';
+}
 
-if (typeof module === 'object')
+function isRegExp(o) {
+  return typeof o === 'object' && objectToString(o) === '[object RegExp]';
+}
+
+if (global.TESTING) clone.getRegExpFlags = getRegExpFlags;
+if (global.TESTING) clone.objectToString = objectToString;
+if (global.TESTING) clone.isDate   = isDate;
+if (global.TESTING) clone.isArray  = isArray;
+if (global.TESTING) clone.isRegExp = isRegExp;
+
+return clone;
+
+})( typeof(global) === 'object' ? global :
+    typeof(window) === 'object' ? window : this);
+
+if (module && module.exports)
   module.exports = clone;
-

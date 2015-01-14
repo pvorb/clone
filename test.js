@@ -3,6 +3,8 @@ if(module.parent === null) {
   console.log('$ nodeunit test.js');
 }
 
+if (typeof(global) === 'object') global.TESTING = true;
+
 var clone = require('./');
 var _ = require('underscore');
 

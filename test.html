@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Clone Test on Browser</title>
-    <script src="clone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
     <script>
+      window.TESTING = true;
       var tests = exports = {}, module = {};
       function require(moduleName) {
         if (moduleName == './') return clone;
@@ -15,6 +15,7 @@
         logList.innerHTML += '<li>'+str+'</li>'
       }
     </script>
+    <script src="clone.js"></script>
     <script src="test.js"></script>
   </head>
   <body>
