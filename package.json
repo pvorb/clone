@@ -41,7 +41,7 @@
   "dependencies": {},
   "devDependencies": {
     "underscore": "*",
-    "nodeunit": "*"
+    "nodeunit": "^0.9"
   },
   "optionalDependencies": {},
   "scripts": {
