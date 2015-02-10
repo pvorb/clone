@@ -3,12 +3,46 @@ if(module.parent === null) {
   console.log('$ nodeunit test.js');
 }
 
+if (typeof(global) === 'object') global.TESTING = true;
 
 var clone = require('./');
-var util = require('util');
 var _ = require('underscore');
 
+function inspect(obj) {
+  seen = [];
+  return JSON.stringify(obj, function(key, val) {
+    if (val != null && typeof val == "object") {
+	    if (seen.indexOf(val) >= 0) return '[cyclic]'
+	    seen.push(val)
+    }
+    return val
+  });
+}
 
+// Creates a new VM in node, or a iframe in a browser to run the script.
+function apartContext(context, script, callback) {
+  var vm = require('vm');
+  if (vm) {
+    var ctx = vm.createContext({ctx: context});
+    callback(vm.runInContext(script, ctx));
+  }
+  else if (document && document.createElement) {
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    var myCtxId = 'tmpCtx' + Math.random();
+    window[myCtxId] = context;
+    iframe.src = 'test-apart-ctx.html?'+myCtxId+'&'+encodeURIComponent(script);
+    iframe.onload = function(){
+      try { callback(iframe.contentWindow.results) }
+      catch(e) {
+        alert('Apart Context iFrame data collection fail.\n'+e); throw e
+      }
+    };
+  } else {
+    console.log('WARNING: cant create an apart context (vm.createContext or iframe).');
+  }
+}
 
 exports["clone string"] = function(test) {
   test.expect(2); // how many tests?
@@ -20,8 +54,6 @@ exports["clone string"] = function(test) {
 
   test.done();
 };
-
-
 
 exports["clone number"] = function(test) {
   test.expect(5); // how many tests?
@@ -40,21 +72,17 @@ exports["clone number"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone date"] = function(test) {
   test.expect(3); // how many tests?
 
   var a = new Date;
   var c = clone(a);
-  test.ok(a instanceof Date);
-  test.ok(c instanceof Date);
-  test.equal(c.getTime(), a.getTime());
+  test.ok(!!a.getUTCDate && !!a.toUTCString);
+  test.ok(!!c.getUTCDate && !!c.toUTCString);
+  test.equal(a.getTime(), c.getTime());
 
   test.done();
 };
-
-
 
 exports["clone object"] = function(test) {
   test.expect(2); // how many tests?
@@ -68,10 +96,8 @@ exports["clone object"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone array"] = function(test) {
-  test.expect(2); // how many tests?
+  test.expect(3); // how many tests?
 
   var a = [
     { foo: "bar" },
@@ -80,12 +106,15 @@ exports["clone array"] = function(test) {
   var b = clone(a);
 
   test.ok(_(a).isEqual(b), "underscore equal");
+  test.ok(b instanceof Array);
   test.deepEqual(b, a);
 
   test.done();
 };
 
 exports["clone buffer"] = function(test) {
+  if (typeof Buffer == 'undefined') return test.done();
+
   test.expect(1);
 
   var a = new Buffer("this is a test buffer");
@@ -95,8 +124,6 @@ exports["clone buffer"] = function(test) {
   test.deepEqual(b, a);
   test.done();
 };
-
-
 
 exports["clone regexp"] = function(test) {
   test.expect(5);
@@ -119,7 +146,6 @@ exports["clone regexp"] = function(test) {
   test.done();
 };
 
-
 exports["clone object containing array"] = function(test) {
   test.expect(2); // how many tests?
 
@@ -135,12 +161,9 @@ exports["clone object containing array"] = function(test) {
   test.done();
 };
 
-
-
 exports["clone object with circular reference"] = function(test) {
   test.expect(8); // how many tests?
 
-  var _ = test.ok;
   var c = [1, "foo", {'hello': 'bar'}, function() {}, false, [2]];
   var b = [c, 2, 3, 4];
   var a = {'b': b, 'c': c};
@@ -149,33 +172,31 @@ exports["clone object with circular reference"] = function(test) {
   c.loop = c;
   c.aloop = a;
   var aCopy = clone(a);
-  _(a != aCopy);
-  _(a.c != aCopy.c);
-  _(aCopy.c == aCopy.b[0]);
-  _(aCopy.c.loop.loop.aloop == aCopy);
-  _(aCopy.c[0] == a.c[0]);
+  test.ok(a != aCopy);
+  test.ok(a.c != aCopy.c);
+  test.ok(aCopy.c == aCopy.b[0]);
+  test.ok(aCopy.c.loop.loop.aloop == aCopy);
+  test.ok(aCopy.c[0] == a.c[0]);
 
   //console.log(util.inspect(aCopy, true, null) );
   //console.log("------------------------------------------------------------");
   //console.log(util.inspect(a, true, null) );
-  _(eq(a, aCopy));
+  test.ok(eq(a, aCopy));
   aCopy.c[0] = 2;
-  _(!eq(a, aCopy));
+  test.ok(!eq(a, aCopy));
   aCopy.c = "2";
-  _(!eq(a, aCopy));
+  test.ok(!eq(a, aCopy));
   //console.log("------------------------------------------------------------");
   //console.log(util.inspect(aCopy, true, null) );
 
   function eq(x, y) {
-    return util.inspect(x, true, null) === util.inspect(y, true, null);
+    return inspect(x) === inspect(y);
   }
 
   test.done();
 };
 
-
-
-exports['clonePrototype'] = function(test) {
+exports['clone prototype'] = function(test) {
   test.expect(3); // how many tests?
 
   var a = {
@@ -190,21 +211,22 @@ exports['clonePrototype'] = function(test) {
   test.strictEqual(b.y, a.y);
 
   test.done();
-}
+};
 
-exports['cloneWithinNewVMContext'] = function(test) {
-  test.expect(3);
-  var vm = require('vm');
-  var ctx = vm.createContext({ clone: clone });
-  var script = "clone( {array: [1, 2, 3], date: new Date(), regex: /^foo$/ig} );";
-  var results = vm.runInContext(script, ctx);
-  test.ok(results.array instanceof Array);
-  test.ok(results.date instanceof Date);
-  test.ok(results.regex instanceof RegExp);
-  test.done();
-}
+exports['clone within an apart context'] = function(test) {
+  var results = apartContext(
+    {clone: clone},
+    "results = ctx.clone({ a: [1, 2, 3], d: new Date(), r: /^foo$/ig })",
+    function(results) {
+      test.ok(results.a.constructor.toString() === Array.toString());
+      test.ok(results.d.constructor.toString() === Date.toString());
+      test.ok(results.r.constructor.toString() === RegExp.toString());
+      test.done();
+    }
+  );
+};
 
-exports['cloneObjectWithNoConstructor'] = function(test) {
+exports['clone object with no constructor'] = function(test) {
   test.expect(3);
   var n = null;
   var a = { foo: 'bar' };
@@ -214,7 +236,7 @@ exports['cloneObjectWithNoConstructor'] = function(test) {
   var b = clone(a);
   test.ok(a.foo, b.foo);
   test.done();
-}
+};
 
 exports['clone object with depth argument'] = function (test) {
   test.expect(6);
@@ -235,7 +257,7 @@ exports['clone object with depth argument'] = function (test) {
   test.notEqual(b.foo, a.foo);
   test.strictEqual(b.foo.bar, a.foo.bar);
   test.done();
-}
+};
 
 exports['maintain prototype chain in clones'] = function (test) {
   test.expect(1);
@@ -244,7 +266,7 @@ exports['maintain prototype chain in clones'] = function (test) {
   var b = clone(a);
   test.strictEqual(Object.getPrototypeOf(a), Object.getPrototypeOf(b));
   test.done();
-}
+};
 
 exports['parent prototype is overriden with prototype provided'] = function (test) {
   test.expect(1);
@@ -253,7 +275,7 @@ exports['parent prototype is overriden with prototype provided'] = function (tes
   var b = clone(a, true, Infinity, null);
   test.strictEqual(b.__defineSetter__, undefined);
   test.done();
-}
+};
 
 exports['clone object with null children'] = function(test) {
   test.expect(1);
@@ -268,7 +290,7 @@ exports['clone object with null children'] = function(test) {
   var b = clone(a);
   test.deepEqual(b, a);
   test.done();
-}
+};
 
 exports['clone instance with getter'] = function(test) {
   test.expect(1);
@@ -286,4 +308,61 @@ exports['clone instance with getter'] = function(test) {
 
   test.strictEqual(b.prop, 'value');
   test.done();
+};
+
+exports['get RegExp flags'] = function(test) {
+  test.strictEqual(clone.getRegExpFlags(/a/),   ''  );
+  test.strictEqual(clone.getRegExpFlags(/a/i),  'i' );
+  test.strictEqual(clone.getRegExpFlags(/a/g),  'g' );
+  test.strictEqual(clone.getRegExpFlags(/a/gi), 'gi');
+  test.strictEqual(clone.getRegExpFlags(/a/m),  'm' );
+  test.done();
+};
+
+exports["recognize Array object"] = function(test) {
+  var results = apartContext(
+    null, "results = [1, 2, 3]",
+    function(alien) {
+      var local = [4, 5, 6];
+      test.ok(clone.isArray(alien)); // recognize in other context.
+      test.ok(clone.isArray(local)); // recognize in local context.
+      test.ok(!clone.isDate(alien));
+      test.ok(!clone.isDate(local));
+      test.ok(!clone.isRegExp(alien));
+      test.ok(!clone.isRegExp(local));
+      test.done();
+    }
+  );
+};
+
+exports["recognize Date object"] = function(test) {
+  var results = apartContext(
+    null, "results = new Date()",
+    function(alien) {
+      var local = new Date();
+      test.ok(clone.isDate(alien)); // recognize in other context.
+      test.ok(clone.isDate(local)); // recognize in local context.
+      test.ok(!clone.isArray(alien));
+      test.ok(!clone.isArray(local));
+      test.ok(!clone.isRegExp(alien));
+      test.ok(!clone.isRegExp(local));
+      test.done();
+    }
+  );
+};
+
+exports["recognize RegExp object"] = function(test) {
+  var results = apartContext(
+    null, "results = /foo/",
+    function(alien) {
+      var local = /bar/;
+      test.ok(clone.isRegExp(alien)); // recognize in other context.
+      test.ok(clone.isRegExp(local)); // recognize in local context.
+      test.ok(!clone.isArray(alien));
+      test.ok(!clone.isArray(local));
+      test.ok(!clone.isDate(alien));
+      test.ok(!clone.isDate(local));
+      test.done();
+    }
+  );
 };
