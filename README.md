@@ -4,17 +4,22 @@
 
 [![info badge](https://nodei.co/npm/clone.png?downloads=true&downloadRank=true&stars=true)](http://npm-stat.com/charts.html?package=clone)
 
-offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in JavaScript.
+Offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in JavaScript, for node.js or browser environments.
 
 
 ## Installation
 
+### At node.js:
+
     npm install clone
 
-(It also works with browserify, ender or standalone.)
+(It also works with browserify, ender, or other commonjs modules loader implementations)
 
+### At a browser:
 
-## Example
+    <script src="clone.js"></script>
+
+## Node.js Example
 
 ~~~ javascript
 var clone = require('clone');
