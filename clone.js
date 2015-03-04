@@ -60,7 +60,7 @@ function clone(parent, circular, depth, prototype) {
     if (isArray(parent)) {
       child = [];
     } else if (isRegExp(parent)) {
-      child = new RegExp(parent.source, clone.getRegExpFlags(parent));
+      child = new RegExp(parent.source, getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
     } else if (isDate(parent)) {
       child = new Date(parent.getTime());
@@ -147,11 +147,13 @@ function isRegExp(o) {
   return typeof o === 'object' && objectToString(o) === '[object RegExp]';
 }
 
-if (global.TESTING) clone.getRegExpFlags = getRegExpFlags;
-if (global.TESTING) clone.objectToString = objectToString;
-if (global.TESTING) clone.isDate   = isDate;
-if (global.TESTING) clone.isArray  = isArray;
-if (global.TESTING) clone.isRegExp = isRegExp;
+if (global.TESTING) {
+  clone.getRegExpFlags = getRegExpFlags;
+  clone.objectToString = objectToString;
+  clone.isDate   = isDate;
+  clone.isArray  = isArray;
+  clone.isRegExp = isRegExp;
+}
 
 return clone;
 
