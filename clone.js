@@ -32,7 +32,7 @@ function clone(parent, circular, depth, prototype) {
   var allParents = [];
   var allChildren = [];
 
-  var useBuffer = typeof Buffer != 'undefined';
+  var GlobalBuffer = 'Buffer' in GLOBAL && GLOBAL['Buffer'];
 
   if (typeof circular == 'undefined')
     circular = true;
@@ -62,8 +62,8 @@ function clone(parent, circular, depth, prototype) {
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
     } else if (clone.__isDate(parent)) {
       child = new Date(parent.getTime());
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
+    } else if (GlobalBuffer && GlobalBuffer.isBuffer(parent)) {
+      child = new GlobalBuffer(parent.length);
       parent.copy(child);
       return child;
     } else {
