@@ -32,7 +32,7 @@ function clone(parent, circular, depth, prototype) {
   var allParents = [];
   var allChildren = [];
 
-  var GlobalBuffer = 'Buffer' in GLOBAL && GLOBAL['Buffer'];
+  var GlobalBuffer = typeof GLOBAL !== 'undefined' && GLOBAL['Buffer'] || typeof window !== 'undefined' && window['Buffer'];
 
   if (typeof circular == 'undefined')
     circular = true;
