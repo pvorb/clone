@@ -11,7 +11,9 @@ offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in Jav
 
     npm install clone
 
-(It also works with browserify, ender or standalone.)
+(It also works with browserify, ender or standalone. You may want to use the
+option `noParse` in browserify to reduce the resulting file size, since usually
+`Buffer`s are not needed in browsers.)
 
 
 ## Example
