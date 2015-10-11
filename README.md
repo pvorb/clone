@@ -1,8 +1,8 @@
 # clone
 
-[![build status](https://secure.travis-ci.org/pvorb/node-clone.png)](http://travis-ci.org/pvorb/node-clone)
+[![build status](https://secure.travis-ci.org/pvorb/node-clone.svg)](http://travis-ci.org/pvorb/node-clone)
 
-[![info badge](https://nodei.co/npm/clone.png?downloads=true&downloadRank=true&stars=true)](http://npm-stat.com/charts.html?package=clone)
+[![info badge](https://nodei.co/npm/clone.svg?downloads=true&downloadRank=true&stars=true)](http://npm-stat.com/charts.html?package=clone)
 
 offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in JavaScript.
 
