@@ -25,7 +25,7 @@ function clone(parent, circular, depth, prototype) {
     depth = circular.depth;
     prototype = circular.prototype;
     filter = circular.filter;
-    circular = circular.circular
+    circular = circular.circular;
   }
   // maintain two arrays for circular references, where corresponding parents
   // and children have the same index
@@ -46,7 +46,7 @@ function clone(parent, circular, depth, prototype) {
     if (parent === null)
       return null;
 
-    if (depth == 0)
+    if (depth === 0)
       return parent;
 
     var child;
@@ -125,22 +125,22 @@ clone.clonePrototype = function clonePrototype(parent) {
 
 function __objToStr(o) {
   return Object.prototype.toString.call(o);
-};
+}
 clone.__objToStr = __objToStr;
 
 function __isDate(o) {
   return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
+}
 clone.__isDate = __isDate;
 
 function __isArray(o) {
   return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
+}
 clone.__isArray = __isArray;
 
 function __isRegExp(o) {
   return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
+}
 clone.__isRegExp = __isRegExp;
 
 function __getRegExpFlags(re) {
@@ -149,7 +149,7 @@ function __getRegExpFlags(re) {
   if (re.ignoreCase) flags += 'i';
   if (re.multiline) flags += 'm';
   return flags;
-};
+}
 clone.__getRegExpFlags = __getRegExpFlags;
 
 return clone;

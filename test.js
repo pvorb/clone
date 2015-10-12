@@ -3,7 +3,7 @@ var clone = require('./');
 function inspect(obj) {
   seen = [];
   return JSON.stringify(obj, function (key, val) {
-    if (val != null && typeof val == "object") {
+    if (val !== null && typeof val == "object") {
       if (seen.indexOf(val) >= 0) {
         return '[cyclic]';
       }
@@ -75,7 +75,7 @@ exports["clone number"] = function (test) {
 exports["clone date"] = function (test) {
   test.expect(3); // how many tests?
 
-  var a = new Date;
+  var a = new Date ();
   var c = clone(a);
   test.ok(!!a.getUTCDate && !!a.toUTCString);
   test.ok(!!c.getUTCDate && !!c.toUTCString);
@@ -303,7 +303,7 @@ exports['clone object with null children'] = function (test) {
 
 exports['clone instance with getter'] = function (test) {
   test.expect(1);
-  function Ctor() {};
+  function Ctor() {}
   Object.defineProperty(Ctor.prototype, 'prop', {
     configurable: true,
     enumerable: true,
