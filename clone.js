@@ -93,7 +93,7 @@ function clone(parent, circular, depth, prototype) {
         attrs = Object.getOwnPropertyDescriptor(proto, i);
       }
 
-      if (attrs && attrs.set === null) {
+      if (attrs && attrs.set == null) {
         continue;
       }
       child[i] = _clone(parent[i], depth - 1);
