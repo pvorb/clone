@@ -1,6 +1,15 @@
 var clone = (function() {
 'use strict';
 
+var nativeMap;
+try {
+  nativeMap = Map;
+} catch(_) {
+  // maybe a reference error because no `Map`. Give it a dummy value that no
+  // value will ever be an instanceof.
+  nativeMap = function() {};
+}
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -55,7 +64,9 @@ function clone(parent, circular, depth, prototype) {
       return parent;
     }
 
-    if (clone.__isArray(parent)) {
+    if (parent instanceof nativeMap) {
+      child = new nativeMap();
+    } else if (clone.__isArray(parent)) {
       child = [];
     } else if (clone.__isRegExp(parent)) {
       child = new RegExp(parent.source, __getRegExpFlags(parent));
@@ -85,6 +96,19 @@ function clone(parent, circular, depth, prototype) {
       }
       allParents.push(parent);
       allChildren.push(child);
+    }
+
+    if (parent instanceof nativeMap) {
+      var keyIterator = parent.keys();
+      while(true) {
+        var next = keyIterator.next();
+        if (next.done) {
+          break;
+        }
+        var keyChild = _clone(next.value, depth - 1);
+        var valueChild = _clone(parent.get(next.value), depth - 1);
+        child.set(keyChild, valueChild);
+      }
     }
 
     for (var i in parent) {

@@ -370,3 +370,32 @@ exports["recognize RegExp object"] = function (test) {
     test.done();
   });
 };
+
+var nativeMap;
+try {
+  nativeMap = Map;
+} catch(_) {}
+if (nativeMap) {
+  exports["clone a native Map"] = function (test) {
+    var map = new Map();
+    // simple key/value
+    map.set('foo', 'bar');
+    // circular object key/property
+    map.set(map, map);
+    // regular expando property
+    map.bar = 'baz';
+    // regular circular expando property
+    map.circle = map;
+
+
+    var clonedMap = clone(map);
+    test.notEqual(map, clonedMap);
+    test.equal(clonedMap.get('foo'), 'bar');
+    test.equal(clonedMap.get(clonedMap), clonedMap);
+    test.equal(clonedMap.bar, 'baz');
+    test.equal(clonedMap.circle, clonedMap);
+
+    test.done();
+  }
+}
+
