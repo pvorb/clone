@@ -319,6 +319,33 @@ exports['clone instance with getter'] = function (test) {
   test.done();
 };
 
+if (Object.getOwnPropertySymbols) {
+  exports['clone object with symbol properties'] = function (test) {
+    var symbol = Symbol();
+    var obj = {};
+    obj[symbol] = 'foo';
+
+    var child = clone(obj);
+
+    test.notEqual(child, obj);
+    test.equal(child[symbol], 'foo');
+
+    test.done();
+  }
+
+  exports['symbols are treated as primitives'] = function (test) {
+    var symbol = Symbol();
+    var obj = {foo: symbol};
+
+    var child = clone(obj);
+
+    test.notEqual(child, obj);
+    test.equal(child.foo, obj.foo);
+
+    test.done();
+  }
+}
+
 exports['get RegExp flags'] = function (test) {
   test.strictEqual(clone.__getRegExpFlags(/a/),   ''  );
   test.strictEqual(clone.__getRegExpFlags(/a/i),  'i' );
