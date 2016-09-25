@@ -14,9 +14,14 @@ var nativeSet;
 try {
   nativeSet = Set;
 } catch(_) {
-  // maybe a reference error because no `Set`. Give it a dummy value that no
-  // value will ever be an instanceof.
   nativeSet = function() {};
+}
+
+var nativePromise;
+try {
+  nativePromise = Promise;
+} catch(_) {
+  nativePromise = function() {};
 }
 
 /**
@@ -77,6 +82,14 @@ function clone(parent, circular, depth, prototype) {
       child = new nativeMap();
     } else if (parent instanceof nativeSet) {
       child = new nativeSet();
+    } else if (parent instanceof nativePromise) {
+      child = new nativePromise(function (resolve, reject) {
+        parent.then(function(value) {
+          resolve(_clone(value, depth - 1));
+        }, function(err) {
+          reject(_clone(err, depth - 1));
+        });
+      });
     } else if (clone.__isArray(parent)) {
       child = [];
     } else if (clone.__isRegExp(parent)) {
