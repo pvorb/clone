@@ -10,6 +10,15 @@ try {
   nativeMap = function() {};
 }
 
+var nativeSet;
+try {
+  nativeSet = Set;
+} catch(_) {
+  // maybe a reference error because no `Set`. Give it a dummy value that no
+  // value will ever be an instanceof.
+  nativeSet = function() {};
+}
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -66,6 +75,8 @@ function clone(parent, circular, depth, prototype) {
 
     if (parent instanceof nativeMap) {
       child = new nativeMap();
+    } else if (parent instanceof nativeSet) {
+      child = new nativeSet();
     } else if (clone.__isArray(parent)) {
       child = [];
     } else if (clone.__isRegExp(parent)) {
@@ -108,6 +119,17 @@ function clone(parent, circular, depth, prototype) {
         var keyChild = _clone(next.value, depth - 1);
         var valueChild = _clone(parent.get(next.value), depth - 1);
         child.set(keyChild, valueChild);
+      }
+    }
+    if (parent instanceof nativeSet) {
+      var iterator = parent.keys();
+      while(true) {
+        var next = iterator.next();
+        if (next.done) {
+          break;
+        }
+        var entryChild = _clone(next.value, depth - 1);
+        child.add(entryChild);
       }
     }
 

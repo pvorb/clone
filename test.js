@@ -399,3 +399,31 @@ if (nativeMap) {
   }
 }
 
+var nativeSet;
+try {
+  nativeSet = Set;
+} catch(_) {}
+if (nativeSet) {
+  exports["clone a native Set"] = function (test) {
+    var set = new Set();
+    // simple entry
+    set.add('foo');
+    // circular entry
+    set.add(set);
+    // regular expando property
+    set.bar = 'baz';
+    // regular circular expando property
+    set.circle = set;
+
+
+    var clonedSet = clone(set);
+    test.notEqual(set, clonedSet);
+    test.ok(clonedSet.has('foo'));
+    test.ok(clonedSet.has(clonedSet));
+    test.ok(!clonedSet.has(set));
+    test.equal(clonedSet.bar, 'baz');
+    test.equal(clonedSet.circle, clonedSet);
+
+    test.done();
+  }
+}
