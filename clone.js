@@ -158,6 +158,16 @@ function clone(parent, circular, depth, prototype) {
       child[i] = _clone(parent[i], depth - 1);
     }
 
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(parent);
+      for (var i = 0; i < symbols.length; i++) {
+        // Don't need to worry about cloning a symbol because it is a primitive,
+        // like a number or string.
+        var symbol = symbols[i];
+        child[symbol] = _clone(parent[symbol], depth - 1);
+      }
+    }
+
     return child;
   }
 
