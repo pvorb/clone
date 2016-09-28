@@ -427,3 +427,61 @@ if (nativeSet) {
     test.done();
   }
 }
+
+var nativePromise;
+try {
+  nativePromise = Promise;
+} catch(_) {}
+if (nativePromise) {
+  exports["clone a native Promise"] = function (test) {
+    test.expect(9);
+
+    var allDonePromises = [];
+
+    // Resolving to a value
+    allDonePromises.push(
+      clone(Promise.resolve('foo')).then(function (value) {
+        test.equal(value, 'foo');
+      })
+    );
+
+    // Rejecting to a value
+    allDonePromises.push(
+      clone(Promise.reject('bar')).catch(function (value) {
+        test.equal(value, 'bar');
+      })
+    );
+
+    // Resolving to a promise
+    allDonePromises.push(
+      clone(Promise.resolve(Promise.resolve('baz'))).then(function (value) {
+        test.equal(value, 'baz');
+      })
+    );
+
+    // Resolving to a circular value
+    var circle = {};
+    circle.circle = circle;
+    allDonePromises.push(
+      clone(Promise.resolve(circle)).then(function (value) {
+        test.notEqual(circle, value);
+        test.equal(value.circle, value);
+      })
+    );
+
+    var expandoPromise = Promise.resolve('ok');
+    expandoPromise.circle = expandoPromise;
+    expandoPromise.prop = 'val';
+    var clonedPromise = clone(expandoPromise);
+    test.notEqual(expandoPromise, clonedPromise);
+    test.equal(clonedPromise.prop, 'val');
+    test.equal(clonedPromise.circle, clonedPromise);
+    allDonePromises.push(clonedPromise.then(function(value) {
+      test.equal(value, 'ok');
+    }));
+
+    Promise.all(allDonePromises).then(function() {
+      test.done();
+    });
+  }
+}
