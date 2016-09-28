@@ -4,7 +4,8 @@
 
 [![info badge](https://nodei.co/npm/clone.svg?downloads=true&downloadRank=true&stars=true)](http://npm-stat.com/charts.html?package=clone)
 
-offers foolproof _deep cloning_ of objects, arrays, numbers, strings etc. in JavaScript.
+offers foolproof _deep cloning_ of objects, arrays, numbers, strings, maps,
+sets, promises, etc. in JavaScript.
 
 
 ## Installation
@@ -92,6 +93,37 @@ So, `b.myself` points to `b`, not `a`. Neat!
     npm test
 
 
+## Changelog
+
+### v2.0.0
+
+#### 2016-09-28
+
+  - Added support for cloning ES6 Maps, Sets, Promises, and Symbols
+
+### v1.0.2
+
+#### 2015-03-25
+
+  - Fix call on getRegExpFlags
+  - Refactor utilities
+  - Refactor test suite
+
+### v1.0.1
+
+#### 2015-03-04
+
+  - Fix nodeunit version
+  - Directly call getRegExpFlags
+
+### v1.0.0
+
+#### 2015-02-10
+
+  - Improve browser support
+  - Improve browser testability
+  - Move helper methods to private namespace
+
 ## Caveat
 
 Some special objects like a socket or `process.stdout`/`stderr` are known to not
@@ -107,7 +139,7 @@ github](https://github.com/pvorb/node-clone/issues) or send me an email to
 
 ## License
 
-Copyright © 2011-2015 [Paul Vorbach](http://paul.vorba.ch/) and
+Copyright © 2011-2016 [Paul Vorbach](http://paul.vorba.ch/) and
 [contributors](https://github.com/pvorb/node-clone/graphs/contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
