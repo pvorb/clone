@@ -24,6 +24,13 @@ try {
   nativePromise = function() {};
 }
 
+var nativeSymbol;
+try {
+  nativeSymbol = Symbol;
+} catch(_) {
+  nativeSymbol = function() {};
+}
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -164,6 +171,10 @@ function clone(parent, circular, depth, prototype) {
         // Don't need to worry about cloning a symbol because it is a primitive,
         // like a number or string.
         var symbol = symbols[i];
+        var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
+        if (descriptor && !descriptor.enumerable) {
+          continue;
+        }
         child[symbol] = _clone(parent[symbol], depth - 1);
       }
     }
