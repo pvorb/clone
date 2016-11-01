@@ -24,13 +24,6 @@ try {
   nativePromise = function() {};
 }
 
-var nativeSymbol;
-try {
-  nativeSymbol = Symbol;
-} catch(_) {
-  nativeSymbol = function() {};
-}
-
 /**
  * Clones (copies) an Object using deep copying.
  *
