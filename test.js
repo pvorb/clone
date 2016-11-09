@@ -512,3 +512,31 @@ if (nativePromise) {
     });
   }
 }
+
+var nativeSymbol;
+try {
+  nativeSymbol = Symbol
+} catch(_) {}
+if (nativeSymbol) {
+  exports["clone only enumerable symbol properties"] = function (test) {
+    test.expect(3);
+
+    var source = {};
+    var symbol1 = nativeSymbol('the first symbol');
+    var symbol2 = nativeSymbol('the second symbol');
+    var symbol3 = nativeSymbol('the third symbol');
+    source[symbol1] = 1;
+    source[symbol2] = 2;
+    source[symbol3] = 3;
+    Object.defineProperty(source, symbol2, {
+      enumerable: false
+    });
+
+    var cloned = clone(source);
+    test.equal(cloned[symbol1], 1);
+    test.equal(cloned.hasOwnProperty(symbol2), false);
+    test.equal(cloned[symbol3], 3);
+
+    test.done();
+  };
+}
