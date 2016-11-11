@@ -43,11 +43,9 @@ try {
  *    (optional - defaults to parent prototype).
 */
 function clone(parent, circular, depth, prototype) {
-  var filter;
   if (typeof circular === 'object') {
     depth = circular.depth;
     prototype = circular.prototype;
-    filter = circular.filter;
     circular = circular.circular;
   }
   // maintain two arrays for circular references, where corresponding parents
