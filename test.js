@@ -95,6 +95,20 @@ exports["clone object"] = function (test) {
   test.done();
 };
 
+exports["clone error"] = function (test) {
+  test.expect(4);
+
+  var a = new Error('Boom!!!');
+  var b = clone(a);
+
+  test.deepEqual(b, a);
+  test.notEqual(b, a);
+  test.ok(b instanceof Error);
+  test.equal(b.message, a.message);
+
+  test.done();
+};
+
 exports["clone array"] = function (test) {
   test.expect(2); // how many tests?
 
