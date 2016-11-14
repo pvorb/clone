@@ -41,13 +41,17 @@ try {
  *    a particular depth. (optional - defaults to Infinity)
  * @param `prototype` - sets the prototype to be used when cloning an object.
  *    (optional - defaults to parent prototype).
+ * @param `includeNonEnumerable` - set to true if the non-enumerable properties
+ *    should be cloned as well. Non-enumerable properties on the prototype
+ *    chain will be ignored. (optional - false by default)
 */
-function clone(parent, circular, depth, prototype) {
+function clone(parent, circular, depth, prototype, includeNonEnumerable) {
   var filter;
   if (typeof circular === 'object') {
     depth = circular.depth;
     prototype = circular.prototype;
     filter = circular.filter;
+    includeNonEnumerable = circular.includeNonEnumerable;
     circular = circular.circular;
   }
   // maintain two arrays for circular references, where corresponding parents
@@ -167,10 +171,30 @@ function clone(parent, circular, depth, prototype) {
         // like a number or string.
         var symbol = symbols[i];
         var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
-        if (descriptor && !descriptor.enumerable) {
+        if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
           continue;
         }
         child[symbol] = _clone(parent[symbol], depth - 1);
+        if (!descriptor.enumerable) {
+          Object.defineProperty(child, symbol, {
+            enumerable: false
+          });
+        }
+      }
+    }
+
+    if (includeNonEnumerable) {
+      var allPropertyNames = Object.getOwnPropertyNames(parent);
+      for (var i = 0; i < allPropertyNames.length; i++) {
+        var propertyName = allPropertyNames[i];
+        var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
+        if (descriptor && descriptor.enumerable) {
+          continue;
+        }
+        child[propertyName] = _clone(parent[propertyName], depth - 1);
+        Object.defineProperty(child, propertyName, {
+          enumerable: false
+        });
       }
     }
 
