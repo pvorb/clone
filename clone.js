@@ -46,11 +46,9 @@ try {
  *    chain will be ignored. (optional - false by default)
 */
 function clone(parent, circular, depth, prototype, includeNonEnumerable) {
-  var filter;
   if (typeof circular === 'object') {
     depth = circular.depth;
     prototype = circular.prototype;
-    filter = circular.filter;
     includeNonEnumerable = circular.includeNonEnumerable;
     circular = circular.circular;
   }
