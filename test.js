@@ -554,3 +554,133 @@ if (nativeSymbol) {
     test.done();
   };
 }
+
+exports["clone should ignore non-enumerable properties by default"] = function (test) {
+  test.expect(5);
+
+  var nativeSymbol;
+  try {
+    nativeSymbol = Symbol
+  } catch(_) {
+    nativeSymbol = function(id) {
+      return '__symbol__:' + id
+    }
+  }
+
+  var source = {
+    x: 1,
+    y: 2
+  };
+  Object.defineProperty(source, 'y', {
+    enumerable: false
+  });
+  Object.defineProperty(source, 'z', {
+    value: 3
+  });
+  var symbol1 = nativeSymbol('a');
+  var symbol2 = nativeSymbol('b');
+  source[symbol1] = 4;
+  source[symbol2] = 5;
+  Object.defineProperty(source, symbol2, {
+    enumerable: false
+  });
+
+  var cloned = clone(source);
+  test.equal(cloned.x, 1);
+  test.equal(Object.hasOwnProperty(cloned, 'y'), false);
+  test.equal(Object.hasOwnProperty(cloned, 'z'), false);
+  test.equal(cloned[symbol1], 4);
+  test.equal(Object.hasOwnProperty(cloned, symbol2), false);
+
+  test.done();
+};
+
+exports["clone should support cloning non-enumerable properties"] = function (test) {
+  test.expect(6);
+
+  var nativeSymbol;
+  try {
+    nativeSymbol = Symbol
+  } catch(_) {
+    nativeSymbol = function(id) {
+      return '__symbol__:' + id
+    }
+  }
+
+  var source = { x: 1, b: [2] };
+  Object.defineProperty(source, 'b', {
+    enumerable: false
+  });
+  var symbol = nativeSymbol('a');
+  source[symbol] = { x: 3 };
+  Object.defineProperty(source, symbol, {
+    enumerable: false
+  });
+
+  var cloned = clone(source, false, Infinity, undefined, true);
+  test.equal(cloned.x, 1);
+  test.equal(cloned.b instanceof Array, true);
+  test.equal(cloned.b.length, 1);
+  test.equal(cloned.b[0], 2);
+  test.equal(cloned[symbol] instanceof Object, true);
+  test.equal(cloned[symbol].x, 3);
+
+  test.done();
+};
+
+exports["clone should allow enabling the cloning of non-enumerable properties via an options object"] = function (test) {
+  test.expect(1);
+
+  var source = { x: 1 };
+  Object.defineProperty(source, 'x', {
+    enumerable: false
+  });
+
+  var cloned = clone(source, {
+    includeNonEnumerable: true
+  });
+  test.equal(cloned.x, 1);
+
+  test.done();
+};
+
+exports["clone should mark the cloned non-enumerable properties as non-enumerable"] = function (test) {
+  test.expect(4);
+
+  var nativeSymbol;
+  try {
+    nativeSymbol = Symbol
+  } catch(_) {
+    nativeSymbol = function(id) {
+      return '__symbol__:' + id
+    }
+  }
+
+  var source = { x: 1, y: 2 };
+  Object.defineProperty(source, 'y', {
+    enumerable: false
+  });
+  var symbol1 = nativeSymbol('a');
+  var symbol2 = nativeSymbol('b');
+  source[symbol1] = 3;
+  source[symbol2] = 4;
+  Object.defineProperty(source, symbol2, {
+    enumerable: false
+  });
+
+  var cloned = clone(source, {
+    includeNonEnumerable: true
+  });
+  test.equal(Object.getOwnPropertyDescriptor(cloned, 'x').enumerable, true);
+  test.equal(Object.getOwnPropertyDescriptor(cloned, 'y').enumerable, false);
+  test.equal(
+    Object.getOwnPropertyDescriptor(cloned, symbol1).enumerable,
+    true
+  );
+  test.equal(
+    Object.getOwnPropertyDescriptor(cloned, symbol2).enumerable,
+    false
+  );
+
+  test.done();
+};
