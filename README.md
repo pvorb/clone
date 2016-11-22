@@ -100,11 +100,19 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### v2.1.0
+
+#### 2016-11-22
+
+  - Add support for cloning Errors
+  - Exclude non-enumerable symbol-named object properties from cloning
+  - Add option to include non-enumerable own properties of objects
+
 ### v2.0.0
 
 #### 2016-09-28
 
-  - Added support for cloning ES6 Maps, Sets, Promises, and Symbols
+  - Add support for cloning ES6 Maps, Sets, Promises, and Symbols
 
 ### v1.0.2
 
