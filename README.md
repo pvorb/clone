@@ -1,6 +1,6 @@
 # clone
 
-[![build status](https://secure.travis-ci.org/pvorb/node-clone.svg)](http://travis-ci.org/pvorb/node-clone) [![downloads](https://img.shields.io/npm/dt/clone.svg)](http://npm-stat.com/charts.html?package=clone)
+[![build status](https://secure.travis-ci.org/pvorb/clone.svg)](http://travis-ci.org/pvorb/clone) [![downloads](https://img.shields.io/npm/dt/clone.svg)](http://npm-stat.com/charts.html?package=clone)
 
 offers foolproof _deep cloning_ of objects, arrays, numbers, strings, maps,
 sets, promises, etc. in JavaScript.
@@ -139,19 +139,19 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 Some special objects like a socket or `process.stdout`/`stderr` are known to not
 be cloneable. If you find other objects that cannot be cloned, please [open an
-issue](https://github.com/pvorb/node-clone/issues/new).
+issue](https://github.com/pvorb/clone/issues/new).
 
 
 ## Bugs and Issues
 
 If you encounter any bugs or issues, feel free to [open an issue at
-github](https://github.com/pvorb/node-clone/issues) or send me an email to
+github](https://github.com/pvorb/clone/issues) or send me an email to
 <paul@vorba.ch>. I also always like to hear from you, if you’re using my code.
 
 ## License
 
-Copyright © 2011-2016 [Paul Vorbach](http://paul.vorba.ch/) and
-[contributors](https://github.com/pvorb/node-clone/graphs/contributors).
+Copyright © 2011-2016 [Paul Vorbach](https://paul.vorba.ch/) and
+[contributors](https://github.com/pvorb/clone/graphs/contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the “Software”), to deal in
