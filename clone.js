@@ -1,6 +1,10 @@
 var clone = (function() {
 'use strict';
 
+function _instanceof(obj, type) {
+  return type != null && obj instanceof type;
+}
+
 var nativeMap;
 try {
   nativeMap = Map;
@@ -80,11 +84,11 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       return parent;
     }
 
-    if (parent instanceof nativeMap) {
+    if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
-    } else if (parent instanceof nativeSet) {
+    } else if (_instanceof(parent, nativeSet)) {
       child = new nativeSet();
-    } else if (parent instanceof nativePromise) {
+    } else if (_instanceof(parent, nativePromise)) {
       child = new nativePromise(function (resolve, reject) {
         parent.then(function(value) {
           resolve(_clone(value, depth - 1));
@@ -103,7 +107,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       child = new Buffer(parent.length);
       parent.copy(child);
       return child;
-    } else if (parent instanceof Error) {
+    } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
     } else {
       if (typeof prototype == 'undefined') {
@@ -126,7 +130,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       allChildren.push(child);
     }
 
-    if (parent instanceof nativeMap) {
+    if (_instanceof(parent, nativeMap)) {
       var keyIterator = parent.keys();
       while(true) {
         var next = keyIterator.next();
@@ -138,7 +142,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         child.set(keyChild, valueChild);
       }
     }
-    if (parent instanceof nativeSet) {
+    if (_instanceof(parent, nativeSet)) {
       var iterator = parent.keys();
       while(true) {
         var next = iterator.next();
