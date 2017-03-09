@@ -98,6 +98,13 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### v2.1.1
+
+#### 2017-03-09
+
+  - Fix build badge in README
+  - Add support for cloning Maps and Sets on Internet Explorer
+
 ### v2.1.0
 
 #### 2016-11-22
