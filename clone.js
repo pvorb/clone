@@ -150,7 +150,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         attrs = Object.getOwnPropertyDescriptor(proto, i);
       }
 
-      if (attrs && attrs.set == null) {
+      if (attrs && attrs.set == null && !attrs.writable) {
         continue;
       }
       child[i] = _clone(parent[i], depth - 1);
