@@ -98,6 +98,12 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### v2.2.0
+
+#### 2017-09-21
+
+  - Skip cloning `instanceof File`
+
 ### v2.1.1
 
 #### 2017-03-09

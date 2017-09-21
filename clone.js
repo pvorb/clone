@@ -75,6 +75,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     if (parent === null)
       return null;
 
+    if (parent instanceof File)
+      return parent;
+
     if (depth === 0)
       return parent;
 
