@@ -45,23 +45,28 @@ can clone dates in arrays in objects, for example.
 
 ## API
 
-`clone(val, circular, depth)`
+### `clone(value[, circular[, depth[, prototype[, includeNonEnumerable]]]])`
 
-  * `val` -- the value that you want to clone, any type allowed
-  * `circular` -- boolean
-
+  * `value`: The value that you want to clone, any type allowed.
+  * `circular`: Boolean, defaults to `true`.
     Call `clone` with `circular` set to `false` if you are certain that `obj`
     contains no circular references. This will give better performance if
     needed. There is no error if `undefined` or `null` is passed as `obj`.
-  * `depth` -- depth to which the object is to be cloned (optional,
-    defaults to infinity)
-  * `prototype` -- sets the prototype to be used when cloning an object.
-    (optional, defaults to parent prototype).
-  * `includeNonEnumerable` -- set to `true` if the non-enumerable properties
+  * `depth`: Depth to which the object is to be cloned (optional,
+    defaults to `Infinity`)
+  * `prototype`: Sets the prototype to be used when cloning an `Object`.
+    (optional, defaults to `__proto__` of the to be cloned value, ie. the cloned
+    object will have the same prototype as the original).
+  * `includeNonEnumerable`: Set to `true` if the non-enumerable properties
     should be cloned as well. Non-enumerable properties on the prototype chain
     will be ignored. (optional, defaults to `false`)
 
-`clone.clonePrototype(obj)`
+### `clone(value, opts)`
+
+you can specify `circular`, `depth`, `prototype` and `includeNonEnumerable` with
+a single `opts` `Object`.
+
+### `clone.clonePrototype(obj)`
 
   * `obj` -- the object that you want to clone
 
