@@ -150,7 +150,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         attrs = Object.getOwnPropertyDescriptor(proto, i);
       }
 
-      if (attrs && attrs.set == null) {
+      // If attribute is not writable and doesn't have a setter, skip it
+      // Re: https://github.com/pvorb/clone/pull/36
+      if (attrs && attrs.set == null && !attrs.writable) {
         continue;
       }
       child[i] = _clone(parent[i], depth - 1);
