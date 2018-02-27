@@ -153,7 +153,21 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       if (attrs && attrs.set == null) {
         continue;
       }
-      child[i] = _clone(parent[i], depth - 1);
+      try{
+        let objProperty = Object.getOwnPropertyDescriptor(child, i)
+        if (objProperty.set === 'undefined'){
+          //no setter define. Skip cloning this property
+          continue;
+        }
+        child[i] = _clone(parent[i], depth - 1);
+      } catch(e){
+        if(e instanceof TypeError){
+          // when in strict mode, TypeError will be thrown if child[i] property only has a getter
+          // we can't do anything about this, other than inform the user that this property cannot be set.
+          continue
+        }
+      }
+
     }
 
     if (Object.getOwnPropertySymbols) {
