@@ -697,7 +697,7 @@ exports["clone should not fail when cloning an object that does not have setters
   });
 
   test.doesNotThrow(
-    ()=>{
+    function(){
       var cloned = clone(source);
     }
   )
