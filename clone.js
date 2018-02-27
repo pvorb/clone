@@ -153,10 +153,12 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       if (attrs && attrs.set == null) {
         continue;
       }
+
       try{
-        let objProperty = Object.getOwnPropertyDescriptor(child, i)
+        let objProperty = Object.getOwnPropertyDescriptor(parent, i)
         if (objProperty.set === 'undefined'){
-          //no setter define. Skip cloning this property
+          //no setter defined. Skip cloning this property
+          console.log('no setter')
           continue;
         }
         child[i] = _clone(parent[i], depth - 1);
@@ -164,6 +166,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         if(e instanceof TypeError){
           // when in strict mode, TypeError will be thrown if child[i] property only has a getter
           // we can't do anything about this, other than inform the user that this property cannot be set.
+          continue
+        } else if(e instanceof ReferenceError){
+          //this may happen in non strict mode
           continue
         }
       }
