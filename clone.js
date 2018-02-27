@@ -155,7 +155,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       }
 
       try{
-        let objProperty = Object.getOwnPropertyDescriptor(parent, i)
+        var objProperty = Object.getOwnPropertyDescriptor(parent, i)
         if (objProperty.set === 'undefined'){
           //no setter defined. Skip cloning this property
           console.log('no setter')
