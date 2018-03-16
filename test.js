@@ -684,3 +684,33 @@ exports["clone should mark the cloned non-enumerable properties as non-enumerabl
 
   test.done();
 };
+
+
+exports["clone object using _clone"] = function (test) {
+  test.expect(3);
+
+  
+  // create an object with _clone prototype
+  function myobj( name, id ){
+    this.name = name;
+    this.id = id;
+  };
+  
+  // note clone function does not copy complete object.
+  myobj.prototype._clone = function(){
+    var newobj = new myobj( this.name, 'isclone');
+    return newobj;
+  }
+
+  var source = new myobj('myname', 'original');
+  
+
+  var cloned = clone(source);
+  
+  test.equal(cloned.name, source.name);
+  test.equal(cloned.id, 'isclone');
+  test.equal(source.id, 'original');
+
+  test.done();
+};
+

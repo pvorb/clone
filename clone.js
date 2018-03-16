@@ -78,6 +78,8 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     if (depth === 0)
       return parent;
 
+    var dochildren = true;
+  
     var child;
     var proto;
     if (typeof parent != 'object') {
@@ -112,7 +114,12 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     } else {
       if (typeof prototype == 'undefined') {
         proto = Object.getPrototypeOf(parent);
-        child = Object.create(proto);
+        if (proto && proto._clone){
+          child = parent._clone();
+          dochildren = false;
+        } else {
+          child = Object.create(proto);
+        }
       }
       else {
         child = Object.create(prototype);
@@ -144,52 +151,54 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       });
     }
 
-    for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
-      }
+    // if we used _clone(), then ignore the rest of this object
+    if (dochildren){
+      for (var i in parent) {
+        var attrs;
+        if (proto) {
+          attrs = Object.getOwnPropertyDescriptor(proto, i);
+        }
 
-      if (attrs && attrs.set == null) {
-        continue;
-      }
-      child[i] = _clone(parent[i], depth - 1);
-    }
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(parent);
-      for (var i = 0; i < symbols.length; i++) {
-        // Don't need to worry about cloning a symbol because it is a primitive,
-        // like a number or string.
-        var symbol = symbols[i];
-        var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
-        if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+        if (attrs && attrs.set == null) {
           continue;
         }
-        child[symbol] = _clone(parent[symbol], depth - 1);
-        if (!descriptor.enumerable) {
-          Object.defineProperty(child, symbol, {
+        child[i] = _clone(parent[i], depth - 1);
+      }
+
+      if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(parent);
+        for (var i = 0; i < symbols.length; i++) {
+          // Don't need to worry about cloning a symbol because it is a primitive,
+          // like a number or string.
+          var symbol = symbols[i];
+          var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
+          if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+            continue;
+          }
+          child[symbol] = _clone(parent[symbol], depth - 1);
+          if (!descriptor.enumerable) {
+            Object.defineProperty(child, symbol, {
+              enumerable: false
+            });
+          }
+        }
+      }
+
+      if (includeNonEnumerable) {
+        var allPropertyNames = Object.getOwnPropertyNames(parent);
+        for (var i = 0; i < allPropertyNames.length; i++) {
+          var propertyName = allPropertyNames[i];
+          var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
+          if (descriptor && descriptor.enumerable) {
+            continue;
+          }
+          child[propertyName] = _clone(parent[propertyName], depth - 1);
+          Object.defineProperty(child, propertyName, {
             enumerable: false
           });
         }
       }
     }
-
-    if (includeNonEnumerable) {
-      var allPropertyNames = Object.getOwnPropertyNames(parent);
-      for (var i = 0; i < allPropertyNames.length; i++) {
-        var propertyName = allPropertyNames[i];
-        var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
-        if (descriptor && descriptor.enumerable) {
-          continue;
-        }
-        child[propertyName] = _clone(parent[propertyName], depth - 1);
-        Object.defineProperty(child, propertyName, {
-          enumerable: false
-        });
-      }
-    }
-
     return child;
   }
 
