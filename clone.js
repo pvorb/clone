@@ -114,7 +114,8 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     } else {
       if (typeof prototype == 'undefined') {
         proto = Object.getPrototypeOf(parent);
-        if (proto && proto._clone){
+        // if a _clone function in prototype OR direct on object
+        if (parent._clone){
           child = parent._clone();
           dochildren = false;
         } else {

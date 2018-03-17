@@ -687,7 +687,7 @@ exports["clone should mark the cloned non-enumerable properties as non-enumerabl
 
 
 exports["clone object using _clone"] = function (test) {
-  test.expect(3);
+  test.expect(5);
 
   
   // create an object with _clone prototype
@@ -702,14 +702,35 @@ exports["clone object using _clone"] = function (test) {
     return newobj;
   }
 
+
   var source = new myobj('myname', 'original');
   
+  // also test a (different) direct on object _clone() method
+  source._clone = function(){
+    var newobj = new myobj( this.name, 'isclone2');
+    return newobj;
+  }
 
+  // this will use the *function* we just added to the source object
   var cloned = clone(source);
+  // this will use the prototype we added to the *object defn*
+  var cloned2 = clone(cloned);
+
+  // ensure that out cloned object still has the prototype _clone()
+  var fail = false;
+  if (!cloned._clone){
+      fail = true;
+  }
+  
+  var util = require('util');
+  console.log(util.inspect(cloned));
+  console.log(util.inspect(cloned2));
   
   test.equal(cloned.name, source.name);
-  test.equal(cloned.id, 'isclone');
+  test.equal(cloned.id, 'isclone2');
+  test.equal(cloned2.id, 'isclone');
   test.equal(source.id, 'original');
+  test.equal(fail, false);
 
   test.done();
 };
