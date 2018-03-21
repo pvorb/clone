@@ -5,8 +5,6 @@
 offers foolproof _deep cloning_ of objects, arrays, numbers, strings, maps,
 sets, promises, etc. in JavaScript.
 
-**XSS vulnerability detected**
-
 
 ## Installation
 
