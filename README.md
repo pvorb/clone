@@ -127,6 +127,13 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
   - Add support for cloning ES6 Maps, Sets, Promises, and Symbols
 
+### v1.0.4
+
+#### 2018-03-21
+
+  - Use `Buffer.allocUnsafe()` on Node >= 4.5.0 (contributed by @ChALkeR;
+    backported from v2.1.2)
+
 ### v1.0.3
 
 #### 2017-11-08
