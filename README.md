@@ -98,6 +98,16 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+#### 2018-03-22
+
+  - Add detection of a custom _clone function on an object.  
+If present, use this function to clone the object and all children.  
+This allows for the cloning of objects in any way you wish, 
+and is especially useful if the object is not clonable in the normal way.
+the _clone() fn can be on the object prototype, or directly on the object as a method, 
+and should return the desired cloned object.  See tests for examples.
+
+
 ### v2.1.1
 
 #### 2017-03-09
