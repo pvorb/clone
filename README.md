@@ -112,7 +112,7 @@ and should return the desired cloned object.  See tests for examples.
 #### 2018-03-21
 
   - Use `Buffer.allocUnsafe()` on Node >= 4.5.0 (contributed by @ChALkeR)
-  
+
 ### v2.1.1
 
 #### 2017-03-09
