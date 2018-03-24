@@ -107,7 +107,12 @@ and is especially useful if the object is not clonable in the normal way.
 the _clone() fn can be on the object prototype, or directly on the object as a method, 
 and should return the desired cloned object.  See tests for examples.
 
+### v2.1.2
 
+#### 2018-03-21
+
+  - Use `Buffer.allocUnsafe()` on Node >= 4.5.0 (contributed by @ChALkeR)
+  
 ### v2.1.1
 
 #### 2017-03-09
