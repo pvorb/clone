@@ -333,6 +333,24 @@ exports['clone instance with getter'] = function (test) {
   test.done();
 };
 
+exports['clone writable prototype prop'] = function (test) {
+  test.expect(1);
+  function Ctor() {
+    this.prop = 'value';
+  }
+  Object.defineProperty(Ctor.prototype, 'prop', {
+    configurable: true,
+    enumerable: true,
+    writable: true
+  });
+
+  var a = new Ctor();
+  var b = clone(a);
+
+  test.strictEqual(b.prop, 'value');
+  test.done();
+};
+
 if (Object.getOwnPropertySymbols) {
   exports['clone object with symbol properties'] = function (test) {
     var symbol = Symbol();
