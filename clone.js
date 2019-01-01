@@ -104,14 +104,14 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     } else if (clone.__isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
-      if (Buffer.allocUnsafe) {
-        // Node.js >= 4.5.0
-        child = Buffer.allocUnsafe(parent.length);
+      if (Buffer.from) {
+        // Node.js >= 5.10.0
+        child = Buffer.from(parent);
       } else {
         // Older Node.js versions
         child = new Buffer(parent.length);
+        parent.copy(child);
       }
-      parent.copy(child);
       return child;
     } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
