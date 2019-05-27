@@ -8,7 +8,7 @@
     "function",
     "date"
   ],
-  "version": "2.1.1",
+  "version": "2.1.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/pvorb/node-clone.git"
@@ -39,7 +39,8 @@
     "rictic (https://github.com/rictic)",
     "Martin Jurča (https://github.com/jurca)",
     "Misery Lee <miserylee@foxmail.com> (https://github.com/miserylee)",
-    "Clemens Wolff (https://github.com/c-w)"
+    "Clemens Wolff (https://github.com/c-w)",
+    "Sabin Thomas (https://github.com/sabinthomas)"
   ],
   "license": "MIT",
   "engines": {

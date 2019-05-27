@@ -45,23 +45,28 @@ can clone dates in arrays in objects, for example.
 
 ## API
 
-`clone(val, circular, depth)`
+### `clone(value[, circular[, depth[, prototype[, includeNonEnumerable]]]])`
 
-  * `val` -- the value that you want to clone, any type allowed
-  * `circular` -- boolean
-
+  * `value`: The value that you want to clone, any type allowed.
+  * `circular`: Boolean, defaults to `true`.
     Call `clone` with `circular` set to `false` if you are certain that `obj`
     contains no circular references. This will give better performance if
     needed. There is no error if `undefined` or `null` is passed as `obj`.
-  * `depth` -- depth to which the object is to be cloned (optional,
-    defaults to infinity)
-  * `prototype` -- sets the prototype to be used when cloning an object.
-    (optional, defaults to parent prototype).
-  * `includeNonEnumerable` -- set to `true` if the non-enumerable properties
+  * `depth`: Depth to which the object is to be cloned (optional,
+    defaults to `Infinity`)
+  * `prototype`: Sets the prototype to be used when cloning an `Object`.
+    (optional, defaults to `__proto__` of the to be cloned value, ie. the cloned
+    object will have the same prototype as the original).
+  * `includeNonEnumerable`: Set to `true` if the non-enumerable properties
     should be cloned as well. Non-enumerable properties on the prototype chain
     will be ignored. (optional, defaults to `false`)
 
-`clone.clonePrototype(obj)`
+### `clone(value, opts)`
+
+you can specify `circular`, `depth`, `prototype` and `includeNonEnumerable` with
+a single `opts` `Object`.
+
+### `clone.clonePrototype(obj)`
 
   * `obj` -- the object that you want to clone
 
@@ -98,6 +103,12 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### v2.1.2
+
+#### 2018-03-21
+
+  - Use `Buffer.allocUnsafe()` on Node >= 4.5.0 (contributed by @ChALkeR)
+
 ### v2.1.1
 
 #### 2017-03-09
@@ -119,7 +130,22 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
   - Add support for cloning ES6 Maps, Sets, Promises, and Symbols
 
-### v1.0.2
+### v1.0.4
+
+#### 2018-03-21
+
+  - Use `Buffer.allocUnsafe()` on Node >= 4.5.0 (contributed by @ChALkeR;
+    backported from v2.1.2)
+
+### v1.0.3
+
+#### 2017-11-08
+
+  - Close XSS vulnerability in the NPM package, which included the file
+    `test-apart-ctx.html`. This vulnerability was disclosed by Juho Nurminen of
+    2NS - Second Nature Security.
+
+### v1.0.2 (deprecated)
 
 #### 2015-03-25
 
@@ -127,14 +153,14 @@ So, `b.myself` points to `b`, not `a`. Neat!
   - Refactor utilities
   - Refactor test suite
 
-### v1.0.1
+### v1.0.1 (deprecated)
 
 #### 2015-03-04
 
   - Fix nodeunit version
   - Directly call getRegExpFlags
 
-### v1.0.0
+### v1.0.0 (deprecated)
 
 #### 2015-02-10
 

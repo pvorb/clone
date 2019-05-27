@@ -104,8 +104,14 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     } else if (clone.__isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
-      parent.copy(child);
+      if (Buffer.from) {
+        // Node.js >= 5.10.0
+        child = Buffer.from(parent);
+      } else {
+        // Older Node.js versions
+        child = new Buffer(parent.length);
+        parent.copy(child);
+      }
       return child;
     } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
@@ -145,15 +151,32 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     }
 
     for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      var attrs = Object.getOwnPropertyDescriptor(parent, i);
+      if (attrs) {
+        child[i] = _clone(parent[i], depth - 1);
       }
 
       if (Object.keys(parent).indexOf(i) < 0 && attrs && attrs.set == null) {
         continue;
+
+      try {
+        var objProperty = Object.getOwnPropertyDescriptor(parent, i);
+        if (objProperty.set === 'undefined') {
+          // no setter defined. Skip cloning this property
+          continue;
+        }
+        child[i] = _clone(parent[i], depth - 1);
+      } catch(e){
+        if (e instanceof TypeError) {
+          // when in strict mode, TypeError will be thrown if child[i] property only has a getter
+          // we can't do anything about this, other than inform the user that this property cannot be set.
+          continue
+        } else if (e instanceof ReferenceError) {
+          //this may happen in non strict mode
+          continue
+        }
       }
-      child[i] = _clone(parent[i], depth - 1);
+
     }
 
     if (Object.getOwnPropertySymbols) {
@@ -167,11 +190,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
           continue;
         }
         child[symbol] = _clone(parent[symbol], depth - 1);
-        if (!descriptor.enumerable) {
-          Object.defineProperty(child, symbol, {
-            enumerable: false
-          });
-        }
+        Object.defineProperty(child, symbol, descriptor);
       }
     }
 
@@ -184,9 +203,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
           continue;
         }
         child[propertyName] = _clone(parent[propertyName], depth - 1);
-        Object.defineProperty(child, propertyName, {
-          enumerable: false
-        });
+        Object.defineProperty(child, propertyName, descriptor);
       }
     }
 
