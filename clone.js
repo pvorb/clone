@@ -155,6 +155,25 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       if (attrs) {
         child[i] = _clone(parent[i], depth - 1);
       }
+
+      try {
+        var objProperty = Object.getOwnPropertyDescriptor(parent, i);
+        if (objProperty.set === 'undefined') {
+          // no setter defined. Skip cloning this property
+          continue;
+        }
+        child[i] = _clone(parent[i], depth - 1);
+      } catch(e){
+        if (e instanceof TypeError) {
+          // when in strict mode, TypeError will be thrown if child[i] property only has a getter
+          // we can't do anything about this, other than inform the user that this property cannot be set.
+          continue
+        } else if (e instanceof ReferenceError) {
+          //this may happen in non strict mode
+          continue
+        }
+      }
+
     }
 
     if (Object.getOwnPropertySymbols) {

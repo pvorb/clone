@@ -684,3 +684,23 @@ exports["clone should mark the cloned non-enumerable properties as non-enumerabl
 
   test.done();
 };
+
+exports["clone should not fail when cloning an object that does not have setters defined on some of its properties"] = function (test) {
+  test.expect(1);
+
+  //init an object with only a getter defined
+  var source = { x: null };
+  Object.defineProperty(source, 'x', { 
+    get: function() { 
+      return x; 
+    }
+  });
+
+  test.doesNotThrow(
+    function(){
+      var cloned = clone(source);
+    }
+  )
+
+  test.done();
+};
