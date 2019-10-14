@@ -28,6 +28,10 @@ try {
   nativePromise = function() {};
 }
 
+var globalopts = {
+  _clone: null
+};
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -74,6 +78,13 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     // cloning null always returns null
     if (parent === null)
       return null;
+    
+    if (globalopts._clone){
+      var result = globalopts._clone(parent, depth);
+      if (result !== undefined) {
+        return result;
+      }
+    }
 
     if (depth === 0)
       return parent;
@@ -160,9 +171,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         var objProperty = Object.getOwnPropertyDescriptor(parent, i);
         if (objProperty.set === 'undefined') {
           // no setter defined. Skip cloning this property
-          continue;
-        }
-        child[i] = _clone(parent[i], depth - 1);
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
       } catch(e){
         if (e instanceof TypeError) {
           // when in strict mode, TypeError will be thrown if child[i] property only has a getter
@@ -206,9 +217,11 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
 
     return child;
   }
-
+  
   return _clone(parent, depth);
 }
+
+clone.globalopts = globalopts;
 
 /**
  * Simple flat clone using prototype, accepts only objects, usefull for property
