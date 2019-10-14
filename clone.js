@@ -29,8 +29,13 @@ try {
 }
 
 var globalopts = {
-  _clone: null
+  _clone: null,
+  
+  crash_types: {
+  '[object Pipe]': true,
+  }
 };
+
 
 /**
  * Clones (copies) an Object using deep copying.
@@ -88,6 +93,11 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
 
     if (depth === 0)
       return parent;
+    
+    if (clone.__isCrash(parent)) {
+      // console.log("avoid crash on "+__objToStr(parent));
+      return parent;
+    }
 
     var child;
     var proto;
@@ -260,6 +270,12 @@ function __isRegExp(o) {
   return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
 }
 clone.__isRegExp = __isRegExp;
+
+function __isCrash(o) {
+  return typeof o === 'object' && globalopts.crash_types[__objToStr(o)];
+}
+clone.__isCrash = __isCrash;
+
 
 function __getRegExpFlags(re) {
   var flags = '';
