@@ -103,6 +103,12 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### v2.1.3
+
+#### 2019-12-16
+
+  - Use native `URL` on Node >= 10.0.0 (contributed by @iambalaam)
+
 ### v2.1.2
 
 #### 2018-03-21

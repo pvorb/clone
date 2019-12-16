@@ -469,6 +469,47 @@ if (nativeSet) {
   }
 }
 
+var nativeURLSearchParams;
+try {
+  nativeURLSearchParams = URLSearchParams;
+} catch (_) { }
+if (nativeURLSearchParams) {
+  exports["clone a native URLSearchParams"] = function (test) {
+    var searchParams = new URLSearchParams('?query=value');
+    // regular circular expando property
+    searchParams.circle = searchParams;
+
+    var clonedSearchParams = clone(searchParams);
+    test.notEqual(searchParams, clonedSearchParams);
+    test.equal(clonedSearchParams, clonedSearchParams.circle);
+
+    test.done()
+  }
+}
+
+var nativeURL;
+try {
+  nativeURL = URL;
+} catch (_) { }
+if (nativeURL) {
+  exports["clone a native URL"] = function (test) {
+    var url = new URL('https://example.com/path?query=value');
+    // regular circular expando property
+    url.circle = url;
+
+    var clonedUrl = clone(url);
+    test.notEqual(url, clonedUrl);
+    test.equal(clonedUrl.protocol, 'https:');
+    test.equal(clonedUrl.host, 'example.com');
+    test.equal(clonedUrl.pathname, '/path');
+    test.equal(clonedUrl.search, '?query=value');
+    test.equal(clonedUrl.circle, clonedUrl);
+    test.notEqual(url.searchParams, clonedUrl.searchParams);
+
+    test.done();
+  }
+}
+
 var nativePromise;
 try {
   nativePromise = Promise;
