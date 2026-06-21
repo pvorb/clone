@@ -156,6 +156,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         child[i] = _clone(parent[i], depth - 1);
       }
 
+      if (Object.keys(parent).indexOf(i) < 0 && attrs && attrs.set == null) {
+        continue;
+
       try {
         var objProperty = Object.getOwnPropertyDescriptor(parent, i);
         if (objProperty.set === 'undefined') {
