@@ -21,6 +21,13 @@ try {
   nativeSet = function() {};
 }
 
+var nativeURL;
+try {
+  nativeURL = URL;
+} catch (_) {
+  nativeURL = function () { };
+}
+
 var nativePromise;
 try {
   nativePromise = Promise;
@@ -88,6 +95,8 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       child = new nativeMap();
     } else if (_instanceof(parent, nativeSet)) {
       child = new nativeSet();
+    } else if (_instanceof(parent, nativeURL)) {
+      child = new nativeURL(parent);
     } else if (_instanceof(parent, nativePromise)) {
       child = new nativePromise(function (resolve, reject) {
         parent.then(function(value) {
@@ -187,7 +196,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
           continue;
         }
         child[symbol] = _clone(parent[symbol], depth - 1);
-        Object.defineProperty(child, symbol, descriptor);
+        Object.defineProperty(child, symbol, _clone(descriptor));
       }
     }
 
@@ -200,7 +209,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
           continue;
         }
         child[propertyName] = _clone(parent[propertyName], depth - 1);
-        Object.defineProperty(child, propertyName, descriptor);
+        Object.defineProperty(child, propertyName, _clone(descriptor));
       }
     }
 
