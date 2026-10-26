@@ -159,6 +159,48 @@ exports["clone regexp"] = function (test) {
   test.done();
 };
 
+exports["clone regexp preserves modern flags"] = function (test) {
+  ['s', 'u', 'y', 'd', 'v'].forEach(function (flag) {
+    var original;
+    try {
+      original = new RegExp('a.b', 'gim' + flag);
+    } catch (err) {
+      return;
+    }
+    original.lastIndex = 3;
+    var copied = clone(original);
+    test.notStrictEqual(copied, original);
+    test.strictEqual(copied.source, original.source);
+    test.strictEqual(copied.flags, original.flags);
+    test.strictEqual(copied.lastIndex, original.lastIndex);
+    test.deepEqual(copied.exec('xxxa\nb'), original.exec('xxxa\nb'));
+  });
+  test.done();
+};
+
+exports["clone regexp preserves dotAll matching"] = function (test) {
+  var original;
+  try {
+    original = new RegExp('a.b', 's');
+  } catch (err) {
+    test.done();
+    return;
+  }
+  test.strictEqual(clone(original).test('a\nb'), true);
+  test.done();
+};
+
+exports["clone regexp without a flags accessor"] = function (test) {
+  apartContext(null, 'delete RegExp.prototype.flags; results = /a/gim', function (original) {
+    test.strictEqual(clone.__getRegExpFlags(original), 'gim');
+    var copied = clone(original);
+    test.ok(copied.global);
+    test.ok(copied.ignoreCase);
+    test.ok(copied.multiline);
+    test.done();
+  });
+};
+
 exports["clone object containing array"] = function (test) {
   test.expect(1); // how many tests?
 
