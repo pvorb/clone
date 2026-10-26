@@ -249,7 +249,9 @@ function __isRegExp(o) {
 clone.__isRegExp = __isRegExp;
 
 function __getRegExpFlags(re) {
-  var flags = '';
+  var flags = re.flags;
+  if (typeof flags === 'string') return flags;
+  flags = '';
   if (re.global) flags += 'g';
   if (re.ignoreCase) flags += 'i';
   if (re.multiline) flags += 'm';
