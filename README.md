@@ -103,6 +103,10 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 ## Changelog
 
+### Unreleased
+
+  - Preserve the length of sparse arrays when cloning.
+
 ### v2.1.2
 
 #### 2018-03-21

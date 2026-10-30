@@ -98,6 +98,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       });
     } else if (clone.__isArray(parent)) {
       child = [];
+      child.length = parent.length;
     } else if (clone.__isRegExp(parent)) {
       child = new RegExp(parent.source, __getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
