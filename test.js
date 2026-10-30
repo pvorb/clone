@@ -704,3 +704,94 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports["clone all-hole array preserves length"] = function (test) {
+  test.expect(4);
+
+  var source = [];
+  source.length = 3;
+  var child = clone(source);
+
+  test.strictEqual(child.length, 3);
+  test.notEqual(child, source);
+  test.deepEqual(Object.keys(child), []);
+  test.strictEqual(0 in child, false);
+
+  test.done();
+};
+
+exports["clone trailing holes preserves length and deep copies elements"] = function (test) {
+  test.expect(8);
+
+  var source = [{ value: 7 }];
+  source.length = 4;
+  var child = clone(source);
+  var nonCircular = clone(source, { circular: false });
+
+  test.strictEqual(child.length, 4);
+  test.strictEqual(nonCircular.length, 4);
+  test.deepEqual(Object.keys(child), ['0']);
+  test.deepEqual(Object.keys(nonCircular), ['0']);
+  test.notEqual(child[0], source[0]);
+  test.notEqual(nonCircular[0], source[0]);
+  test.equal(child[0].value, 7);
+  test.equal(nonCircular[0].value, 7);
+
+  test.done();
+};
+
+exports["clone nested sparse array preserves circular references and aliases"] = function (test) {
+  test.expect(8);
+
+  var source = [{ value: 7 }];
+  source.length = 4;
+  source.self = source;
+  var child = clone({ items: source, alias: source });
+
+  test.strictEqual(child.items.length, 4);
+  test.notEqual(child.items, source);
+  test.strictEqual(child.items, child.alias);
+  test.strictEqual(child.items.self, child.items);
+  test.notEqual(child.items[0], source[0]);
+  test.equal(child.items[0].value, 7);
+  test.deepEqual(Object.keys(child.items), ['0', 'self']);
+  test.strictEqual(3 in child.items, false);
+
+  test.done();
+};
+
+exports["clone dense and leading-hole arrays"] = function (test) {
+  test.expect(8);
+
+  var dense = [{ value: 7 }, 8];
+  var leading = [];
+  leading.length = 3;
+  leading[2] = { value: 9 };
+  var denseChild = clone(dense);
+  var leadingChild = clone(leading);
+
+  test.strictEqual(denseChild.length, 2);
+  test.deepEqual(denseChild, dense);
+  test.notEqual(denseChild[0], dense[0]);
+  test.strictEqual(leadingChild.length, 3);
+  test.deepEqual(Object.keys(leadingChild), ['2']);
+  test.notEqual(leadingChild[2], leading[2]);
+  test.equal(leadingChild[2].value, 9);
+  test.strictEqual(0 in leadingChild, false);
+
+  test.done();
+};
+
+exports["clone sparse array with existing non-enumerable and depth options"] = function (test) {
+  test.expect(4);
+
+  var source = [];
+  source.length = 3;
+  var child = clone(source, { includeNonEnumerable: true });
+
+  test.strictEqual(child.length, 3);
+  test.notEqual(child, source);
+  test.deepEqual(Object.keys(child), []);
+  test.strictEqual(clone(source, { depth: 0 }), source);
+
+  test.done();
+};
