@@ -139,6 +139,36 @@ exports["clone buffer"] = function (test) {
   test.done();
 };
 
+[
+  ['missing', undefined],
+  ['null', null],
+  ['array', []],
+  ['object', {}],
+  ['non-callable isBuffer', {isBuffer: true}],
+  ['unrelated constructor', function Buffer() {}]
+].forEach(function (entry) {
+  exports['clone with ' + entry[0] + ' Buffer global'] = function (test) {
+    var root = typeof global == 'undefined' ? window : global;
+    var originalBuffer = Object.getOwnPropertyDescriptor(root, 'Buffer');
+    var parent = {nested: {value: 1}};
+    var child;
+
+    try {
+      root.Buffer = entry[1];
+      child = clone(parent);
+    } finally {
+      if (originalBuffer) Object.defineProperty(root, 'Buffer', originalBuffer);
+      else delete root.Buffer;
+    }
+
+    test.expect(3);
+    test.deepEqual(child, parent);
+    test.ok(child !== parent);
+    test.ok(child.nested !== parent.nested);
+    test.done();
+  };
+});
+
 exports["clone regexp"] = function (test) {
   test.expect(5);
 

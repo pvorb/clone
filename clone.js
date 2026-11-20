@@ -61,7 +61,8 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
   var allParents = [];
   var allChildren = [];
 
-  var useBuffer = typeof Buffer != 'undefined';
+  var useBuffer = typeof Buffer != 'undefined' && Buffer !== null &&
+    typeof Buffer.isBuffer == 'function';
 
   if (typeof circular == 'undefined')
     circular = true;
