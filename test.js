@@ -685,6 +685,50 @@ exports["clone should mark the cloned non-enumerable properties as non-enumerabl
   test.done();
 };
 
+exports["clone preserves shared Buffer references"] = function (test) {
+  var buffer = new Buffer([1, 2, 3]);
+  var source = {first: buffer, nested: {value: buffer}, list: [buffer, buffer]};
+  var copied = clone(source);
+  test.notStrictEqual(copied.first, buffer);
+  test.strictEqual(copied.first, copied.nested.value);
+  test.strictEqual(copied.first, copied.list[0]);
+  test.strictEqual(copied.list[0], copied.list[1]);
+  test.deepEqual(copied.first, buffer);
+  copied.first[0] = 9;
+  test.equal(buffer[0], 1);
+  test.equal(copied.nested.value[0], 9);
+  test.done();
+};
+
+if (nativeMap && nativeSet) {
+  exports["clone reuses Buffer clones in Map keys and Set members"] = function (test) {
+    var buffer = new Buffer([1, 2]);
+    var map = new nativeMap();
+    map.set(buffer, buffer);
+    var set = new nativeSet();
+    set.add(buffer);
+    var copied = clone({buffer: buffer, map: map, set: set});
+    test.ok(copied.map.has(copied.buffer));
+    test.strictEqual(copied.map.get(copied.buffer), copied.buffer);
+    test.ok(copied.set.has(copied.buffer));
+    test.ok(!copied.map.has(buffer));
+    test.ok(!copied.set.has(buffer));
+    test.done();
+  };
+}
+
+exports["clone Buffer aliases respects circular and depth options"] = function (test) {
+  var buffer = new Buffer([1, 2]);
+  var source = [buffer, buffer];
+  var separate = clone(source, false);
+  test.notStrictEqual(separate[0], separate[1]);
+  test.notStrictEqual(separate[0], buffer);
+  test.deepEqual(separate[0], buffer);
+  test.strictEqual(clone(source, true, 1)[0], buffer);
+  test.strictEqual(clone(source, true, 0), source);
+  test.done();
+};
+
 exports["clone should not fail when cloning an object that does not have setters defined on some of its properties"] = function (test) {
   test.expect(1);
 

@@ -84,6 +84,13 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       return parent;
     }
 
+    if (circular) {
+      var index = allParents.indexOf(parent);
+      if (index != -1) {
+        return allChildren[index];
+      }
+    }
+
     if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
     } else if (_instanceof(parent, nativeSet)) {
@@ -112,6 +119,10 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         child = new Buffer(parent.length);
         parent.copy(child);
       }
+      if (circular) {
+        allParents.push(parent);
+        allChildren.push(child);
+      }
       return child;
     } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
@@ -127,11 +138,6 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     }
 
     if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
       allParents.push(parent);
       allChildren.push(child);
     }
