@@ -413,10 +413,70 @@ exports["recognize RegExp object"] = function (test) {
 };
 
 var nativeMap;
+
+if (Object.setPrototypeOf) {
+  exports['clone an Array subclass without calling its constructor'] = function (test) {
+    var constructions = 0;
+    function CustomArray() {
+      constructions++;
+      return Object.setPrototypeOf([], CustomArray.prototype);
+    }
+    CustomArray.prototype = Object.create(Array.prototype);
+    CustomArray.prototype.first = function () { return this[0]; };
+    var source = new CustomArray();
+    source.push({ value: 1 });
+    source.push(source);
+
+    var result = clone({ array: source }).array;
+    test.ok(result instanceof CustomArray);
+    test.ok(Array.isArray(result));
+    test.strictEqual(constructions, 1);
+    test.strictEqual(result.first(), result[0]);
+    test.notStrictEqual(result[0], source[0]);
+    test.deepEqual(result[0], { value: 1 });
+    test.strictEqual(result[1], result);
+    test.done();
+  };
+}
+
 try {
   nativeMap = Map;
 } catch(_) {}
 if (nativeMap) {
+  if (Object.setPrototypeOf) {
+    exports['clone a Map subclass with default values'] = function (test) {
+      var constructions = 0;
+      function DefaultMap(factory) {
+        constructions++;
+        var map = Object.setPrototypeOf(new Map(), DefaultMap.prototype);
+        map.factory = factory;
+        return map;
+      }
+      DefaultMap.prototype = Object.create(Map.prototype);
+      DefaultMap.prototype.get = function (key) {
+        if (!this.has(key)) this.set(key, this.factory(key));
+        return Map.prototype.get.call(this, key);
+      };
+      DefaultMap.prototype.set = function (key, value) {
+        if (!this.factory) throw new Error('Map state is not initialized');
+        return Map.prototype.set.call(this, key, value);
+      };
+
+      var source = new DefaultMap(function () { return { value: 'default' }; });
+      source.set('existing', { value: 1 });
+      source.set(source, source);
+      var result = clone(source);
+      test.ok(result instanceof DefaultMap);
+      test.strictEqual(constructions, 1);
+      test.notStrictEqual(result.get('existing'), source.get('existing'));
+      test.deepEqual(result.get('existing'), { value: 1 });
+      test.strictEqual(result.get(result), result);
+      test.deepEqual(result.get('missing'), { value: 'default' });
+      test.strictEqual(source.has('missing'), false);
+      test.done();
+    };
+  }
+
   exports["clone a native Map"] = function (test) {
     var map = new Map();
     // simple key/value
@@ -445,6 +505,26 @@ try {
   nativeSet = Set;
 } catch(_) {}
 if (nativeSet) {
+  if (Object.setPrototypeOf) {
+    exports['clone a Set subclass'] = function (test) {
+      function CustomSet() { return Object.setPrototypeOf(new Set(), CustomSet.prototype); }
+      CustomSet.prototype = Object.create(Set.prototype);
+      CustomSet.prototype.contains = function (value) { return this.has(value); };
+      var source = new CustomSet();
+      var value = { value: 1 };
+      source.add(value);
+      source.add(source);
+      source.value = value;
+      var result = clone(source);
+      test.ok(result instanceof CustomSet);
+      test.strictEqual(result.contains(result), true);
+      test.strictEqual(result.contains(source), false);
+      test.strictEqual(result.contains(result.value), true);
+      test.notStrictEqual(result.value, value);
+      test.done();
+    };
+  }
+
   exports["clone a native Set"] = function (test) {
     var set = new Set();
     // simple entry

@@ -80,14 +80,17 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
 
     var child;
     var proto;
+    var preserveCollectionPrototype = false;
     if (typeof parent != 'object') {
       return parent;
     }
 
     if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
+      preserveCollectionPrototype = true;
     } else if (_instanceof(parent, nativeSet)) {
       child = new nativeSet();
+      preserveCollectionPrototype = true;
     } else if (_instanceof(parent, nativePromise)) {
       child = new nativePromise(function (resolve, reject) {
         parent.then(function(value) {
@@ -98,6 +101,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       });
     } else if (clone.__isArray(parent)) {
       child = [];
+      preserveCollectionPrototype = true;
     } else if (clone.__isRegExp(parent)) {
       child = new RegExp(parent.source, __getRegExpFlags(parent));
       if (parent.lastIndex) child.lastIndex = parent.lastIndex;
@@ -202,6 +206,12 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         child[propertyName] = _clone(parent[propertyName], depth - 1);
         Object.defineProperty(child, propertyName, descriptor);
       }
+    }
+
+    if (preserveCollectionPrototype && Object.setPrototypeOf) {
+      // Populate the collection before enabling subclass methods, which may
+      // depend on instance properties copied above. Do not call constructors.
+      Object.setPrototypeOf(child, Object.getPrototypeOf(parent));
     }
 
     return child;
