@@ -39,8 +39,10 @@ This will print:
 ~~~
 
 **clone** masters cloning simple objects (even with custom prototype), arrays,
-Date objects, and RegExp objects. Everything is cloned recursively, so that you
-can clone dates in arrays in objects, for example.
+Date objects, RegExp objects, typed arrays, ArrayBuffers, and DataViews.
+Binary views retain their offsets and lengths, and views sharing a buffer share
+the copied buffer when circular-reference tracking is enabled. Everything is
+cloned recursively, so that you can clone dates in arrays in objects, for example.
 
 
 ## API
