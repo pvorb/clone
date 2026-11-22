@@ -22,6 +22,8 @@ try {
 }
 
 var nativePromise;
+var nativeWeakMap = typeof WeakMap === 'undefined' ? null : WeakMap;
+var nativeWeakSet = typeof WeakSet === 'undefined' ? null : WeakSet;
 try {
   nativePromise = Promise;
 } catch(_) {
@@ -82,6 +84,15 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     var proto;
     if (typeof parent != 'object') {
       return parent;
+    }
+
+    // Weak collections cannot be enumerated to copy their entries. Copying
+    // only their prototype produces an object whose native methods all fail.
+    if (_instanceof(parent, nativeWeakMap)) {
+      throw new TypeError('Cannot clone WeakMap: entries are not enumerable');
+    }
+    if (_instanceof(parent, nativeWeakSet)) {
+      throw new TypeError('Cannot clone WeakSet: entries are not enumerable');
     }
 
     if (_instanceof(parent, nativeMap)) {

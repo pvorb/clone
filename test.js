@@ -1,5 +1,25 @@
 var clone = require('./');
 
+exports["reject weak collections instead of creating invalid objects"] = function (test) {
+  [typeof WeakMap === 'undefined' ? null : WeakMap,
+   typeof WeakSet === 'undefined' ? null : WeakSet].forEach(function (Type) {
+    if (!Type) return;
+    var key = {};
+    var value = new Type();
+    if (value.set) value.set(key, 42);
+    else value.add(key);
+    test.throws(function () { clone(value); }, TypeError);
+    test.throws(function () {
+      clone([1, value, 'bar'], { includeNonEnumerable: true });
+    }, /Cannot clone Weak(Map|Set)/);
+    test.ok(value.has(key));
+    test.strictEqual(clone(value, { depth: 0 }), value);
+    var shallow = clone({ value: value }, { depth: 1 });
+    test.strictEqual(shallow.value, value);
+  });
+  test.done();
+};
+
 function inspect(obj) {
   seen = [];
   return JSON.stringify(obj, function (key, val) {
