@@ -28,6 +28,24 @@ try {
   nativePromise = function() {};
 }
 
+var nativeArrayBuffer = typeof ArrayBuffer != 'undefined' && ArrayBuffer;
+var nativeSharedArrayBuffer = typeof SharedArrayBuffer != 'undefined' && SharedArrayBuffer;
+var nativeDataView = typeof DataView != 'undefined' && DataView;
+var nativeTypedArrays = {
+  '[object Int8Array]': typeof Int8Array != 'undefined' && Int8Array,
+  '[object Uint8Array]': typeof Uint8Array != 'undefined' && Uint8Array,
+  '[object Uint8ClampedArray]': typeof Uint8ClampedArray != 'undefined' && Uint8ClampedArray,
+  '[object Int16Array]': typeof Int16Array != 'undefined' && Int16Array,
+  '[object Uint16Array]': typeof Uint16Array != 'undefined' && Uint16Array,
+  '[object Int32Array]': typeof Int32Array != 'undefined' && Int32Array,
+  '[object Uint32Array]': typeof Uint32Array != 'undefined' && Uint32Array,
+  '[object Float16Array]': typeof Float16Array != 'undefined' && Float16Array,
+  '[object Float32Array]': typeof Float32Array != 'undefined' && Float32Array,
+  '[object Float64Array]': typeof Float64Array != 'undefined' && Float64Array,
+  '[object BigInt64Array]': typeof BigInt64Array != 'undefined' && BigInt64Array,
+  '[object BigUint64Array]': typeof BigUint64Array != 'undefined' && BigUint64Array
+};
+
 /**
  * Clones (copies) an Object using deep copying.
  *
@@ -84,6 +102,19 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       return parent;
     }
 
+    var tag = __objToStr(parent);
+    var bufferType = tag == '[object ArrayBuffer]' ? nativeArrayBuffer :
+      tag == '[object SharedArrayBuffer]' ? nativeSharedArrayBuffer : null;
+    var viewType = nativeTypedArrays[tag];
+    var isDataView = nativeDataView && tag == '[object DataView]';
+
+    if (circular && (bufferType || viewType || isDataView)) {
+      var binaryIndex = allParents.indexOf(parent);
+      if (binaryIndex != -1) {
+        return allChildren[binaryIndex];
+      }
+    }
+
     if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
     } else if (_instanceof(parent, nativeSet)) {
@@ -113,6 +144,16 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         parent.copy(child);
       }
       return child;
+    } else if (bufferType) {
+      child = new bufferType(parent.byteLength);
+      new Uint8Array(child).set(new Uint8Array(parent));
+    } else if (viewType || isDataView) {
+      // The backing store is internal state, so it uses the view's depth.
+      // Cloning it through _clone also preserves aliases between views.
+      var buffer = _clone(parent.buffer, depth);
+      child = isDataView ?
+        new nativeDataView(buffer, parent.byteOffset, parent.byteLength) :
+        new viewType(buffer, parent.byteOffset, parent.length);
     } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
     } else {
@@ -151,6 +192,10 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     }
 
     for (var i in parent) {
+      // Indexed elements were copied byte-for-byte with the backing buffer.
+      if (viewType && String(+i) === i && +i >= 0 && +i < parent.length) {
+        continue;
+      }
       var attrs = Object.getOwnPropertyDescriptor(parent, i);
       if (attrs) {
         child[i] = _clone(parent[i], depth - 1);
@@ -202,6 +247,10 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         child[propertyName] = _clone(parent[propertyName], depth - 1);
         Object.defineProperty(child, propertyName, descriptor);
       }
+    }
+
+    if ((bufferType || viewType || isDataView) && Object.setPrototypeOf) {
+      Object.setPrototypeOf(child, Object.getPrototypeOf(parent));
     }
 
     return child;

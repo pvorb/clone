@@ -704,3 +704,186 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports["clone binary Float32Array methods"] = function (test) {
+  if (typeof Float32Array == 'undefined') return test.done();
+  var source = new Float32Array([10, 11.25]);
+  var copied = clone(source);
+  test.notStrictEqual(copied, source);
+  test.notStrictEqual(copied.buffer, source.buffer);
+  test.equal(copied.length, 2);
+  test.equal(copied.subarray(1)[0], 11.25);
+  copied.set([20]);
+  test.equal(copied[0], 20);
+  test.equal(source[0], 10);
+  test.done();
+};
+
+exports["clone binary typed array kinds"] = function (test) {
+  var types = [
+    typeof Int8Array != 'undefined' && Int8Array,
+    typeof Uint8Array != 'undefined' && Uint8Array,
+    typeof Uint8ClampedArray != 'undefined' && Uint8ClampedArray,
+    typeof Int16Array != 'undefined' && Int16Array,
+    typeof Uint16Array != 'undefined' && Uint16Array,
+    typeof Int32Array != 'undefined' && Int32Array,
+    typeof Uint32Array != 'undefined' && Uint32Array,
+    typeof Float16Array != 'undefined' && Float16Array,
+    typeof Float32Array != 'undefined' && Float32Array,
+    typeof Float64Array != 'undefined' && Float64Array,
+    typeof BigInt64Array != 'undefined' && BigInt64Array,
+    typeof BigUint64Array != 'undefined' && BigUint64Array
+  ];
+  types.forEach(function (Type) {
+    if (!Type) return;
+    var source = new Type(3);
+    var value = typeof source[0] == 'bigint' ? BigInt(17) : 17;
+    source[1] = value;
+    var copied = clone(source);
+    test.ok(copied instanceof Type);
+    test.equal(copied.length, 3);
+    test.strictEqual(copied[1], value);
+    test.strictEqual(copied.subarray(1, 2)[0], value);
+    test.notStrictEqual(copied.buffer, source.buffer);
+    test.equal(clone(new Type(0)).length, 0);
+  });
+  test.done();
+};
+
+exports["clone binary ArrayBuffer and DataView"] = function (test) {
+  if (typeof DataView == 'undefined') return test.done();
+  var buffer = new ArrayBuffer(16);
+  var source = new DataView(buffer, 4, 8);
+  source.setUint32(0, 0x12345678);
+  source.note = { name: 'view' };
+  buffer.note = { name: 'buffer' };
+  var copied = clone(source);
+  test.equal(copied.byteOffset, 4);
+  test.equal(copied.byteLength, 8);
+  test.equal(copied.buffer.byteLength, 16);
+  test.equal(copied.getUint32(0), 0x12345678);
+  test.notStrictEqual(copied.note, source.note);
+  test.notStrictEqual(copied.buffer.note, buffer.note);
+  copied.setUint32(0, 0);
+  test.equal(source.getUint32(0), 0x12345678);
+  var bufferCopy = clone(buffer);
+  test.equal(new DataView(bufferCopy).getUint32(4), 0x12345678);
+  test.notStrictEqual(bufferCopy.note, buffer.note);
+  test.equal(clone(new DataView(buffer, 16, 0)).byteLength, 0);
+  test.done();
+};
+
+exports["clone binary shared references and cycles"] = function (test) {
+  if (typeof DataView == 'undefined') return test.done();
+  var buffer = new ArrayBuffer(32);
+  var bytes = new Uint8Array(buffer, 4, 8);
+  var words = new Uint16Array(buffer, 8, 4);
+  var view = new DataView(buffer, 4, 8);
+  buffer.bytes = bytes;
+  bytes.owner = buffer;
+  bytes.self = bytes;
+  var copied = clone([bytes, words, buffer, bytes, view]);
+  test.strictEqual(copied[0], copied[3]);
+  test.strictEqual(copied[0].buffer, copied[2]);
+  test.strictEqual(copied[1].buffer, copied[2]);
+  test.strictEqual(copied[4].buffer, copied[2]);
+  test.strictEqual(copied[2].bytes, copied[0]);
+  test.strictEqual(copied[0].owner, copied[2]);
+  test.strictEqual(copied[0].self, copied[0]);
+  test.notStrictEqual(copied[2], buffer);
+  test.equal(copied[0].byteOffset, 4);
+  test.equal(copied[1].byteOffset, 8);
+  copied[0][0] = 23;
+  test.equal(copied[4].getUint8(0), 23);
+  test.equal(bytes[0], 0);
+  var rootBufferCopy = clone(buffer);
+  test.strictEqual(rootBufferCopy.bytes.buffer, rootBufferCopy);
+  test.strictEqual(rootBufferCopy.bytes.owner, rootBufferCopy);
+  test.done();
+};
+
+exports["clone binary depth and noncircular options"] = function (test) {
+  if (typeof Uint8Array == 'undefined') return test.done();
+  var source = new Uint8Array([1, 2]);
+  source.note = { name: 'data' };
+  source.buffer.note = { name: 'storage' };
+  test.strictEqual(clone(source, true, 0), source);
+  var shallow = clone(source, true, 1);
+  test.notStrictEqual(shallow, source);
+  test.notStrictEqual(shallow.buffer, source.buffer);
+  test.strictEqual(shallow.note, source.note);
+  test.strictEqual(shallow.buffer.note, source.buffer.note);
+  test.equal(shallow.subarray(1)[0], 2);
+  var copied = clone(source, false);
+  test.notStrictEqual(copied.buffer, source.buffer);
+  test.notStrictEqual(copied.note, source.note);
+  test.notStrictEqual(copied.buffer.note, source.buffer.note);
+  test.equal(copied[1], 2);
+  test.done();
+};
+
+exports["clone binary constructors and prototypes"] = function (test) {
+  if (typeof Float32Array == 'undefined') return test.done();
+  function CustomArray() { throw new Error('Do not call user constructors'); }
+  var source = new Float32Array([10, 11]);
+  source.constructor = CustomArray;
+  source.buffer.constructor = CustomArray;
+  if (Object.setPrototypeOf) {
+    CustomArray.prototype = Object.create(Float32Array.prototype);
+    Object.setPrototypeOf(source, CustomArray.prototype);
+  }
+  var copied = clone(source);
+  test.strictEqual(copied.constructor, CustomArray);
+  test.strictEqual(copied.buffer.constructor, CustomArray);
+  test.strictEqual(Object.getPrototypeOf(copied), Object.getPrototypeOf(source));
+  test.equal(copied.length, 2);
+  copied.set([12]);
+  test.equal(copied[0], 12);
+  test.equal(source[0], 10);
+  test.done();
+};
+
+exports["clone binary arrays from another context"] = function (test) {
+  if (typeof Float32Array == 'undefined') return test.done();
+  apartContext({}, 'new Float32Array([3.5, 4.5])', function (source) {
+    var copied = clone(source);
+    test.equal(copied.length, 2);
+    test.equal(copied.subarray(1)[0], 4.5);
+    test.notStrictEqual(copied.buffer, source.buffer);
+    if (Object.setPrototypeOf) {
+      test.strictEqual(Object.getPrototypeOf(copied), Object.getPrototypeOf(source));
+    }
+    test.done();
+  });
+};
+
+exports["clone binary SharedArrayBuffer"] = function (test) {
+  if (typeof SharedArrayBuffer == 'undefined') return test.done();
+  var source = new Uint8Array(new SharedArrayBuffer(8), 2, 4);
+  source[0] = 13;
+  var copied = clone({ view: source, buffer: source.buffer });
+  test.ok(copied.buffer instanceof SharedArrayBuffer);
+  test.strictEqual(copied.view.buffer, copied.buffer);
+  test.notStrictEqual(copied.buffer, source.buffer);
+  test.equal(copied.view.byteOffset, 2);
+  test.equal(copied.view[0], 13);
+  copied.view[0] = 14;
+  test.equal(source[0], 13);
+  test.done();
+};
+
+exports["clone binary preserves backing bytes"] = function (test) {
+  if (typeof Float32Array == 'undefined') return test.done();
+  var buffer = new ArrayBuffer(16);
+  var words = new Uint32Array(buffer);
+  words[0] = 0x12345678;
+  words[1] = 0x7f800001; // NaN payloads must not be rewritten as numeric values.
+  words[2] = 0x80000000;
+  words[3] = 0x87654321;
+  var source = new Float32Array(buffer, 4, 2);
+  var copied = clone(source);
+  test.deepEqual(Array.prototype.slice.call(new Uint32Array(copied.buffer)),
+    Array.prototype.slice.call(words));
+  test.equal(copied.byteOffset, 4);
+  test.equal(copied.length, 2);
+  test.done();
+};
