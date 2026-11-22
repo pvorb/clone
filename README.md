@@ -43,6 +43,26 @@ Date objects, and RegExp objects. Everything is cloned recursively, so that you
 can clone dates in arrays in objects, for example.
 
 
+## Native alternative
+
+Modern browsers and Node.js provide
+[`structuredClone`](https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone),
+which can deep-clone many common values without a dependency:
+
+~~~ javascript
+var original = { foo: { bar: 'baz' } };
+var copy = structuredClone(original);
+original.foo.bar = 'foo';
+console.log(copy.foo.bar); // 'baz'
+~~~
+
+Check its availability in your target runtime and whether its supported types
+meet your needs. For example, `structuredClone` throws when cloning promises or
+functions, and it does not preserve custom object prototypes. Its options also
+differ from **clone**: it does not provide the `depth`, `prototype`, or
+`includeNonEnumerable` options described below.
+
+
 ## API
 
 ### `clone(value[, circular[, depth[, prototype[, includeNonEnumerable]]]])`
@@ -102,6 +122,10 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 
 ## Changelog
+
+### Unreleased
+
+  - Document the native `structuredClone` alternative and its limitations.
 
 ### v2.1.2
 
