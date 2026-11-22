@@ -47,7 +47,7 @@ can clone dates in arrays in objects, for example.
 
 ### `clone(value[, circular[, depth[, prototype[, includeNonEnumerable]]]])`
 
-  * `value`: The value that you want to clone, any type allowed.
+  * `value`: The value that you want to clone.
   * `circular`: Boolean, defaults to `true`.
     Call `clone` with `circular` set to `false` if you are certain that `obj`
     contains no circular references. This will give better performance if
@@ -65,6 +65,15 @@ can clone dates in arrays in objects, for example.
 
 you can specify `circular`, `depth`, `prototype` and `includeNonEnumerable` with
 a single `opts` `Object`.
+
+`WeakMap` and `WeakSet` cannot be deep-cloned because JavaScript does not
+expose their entries. Encountering either throws a `TypeError`, including
+inside another object or array, instead of returning an invalid collection.
+This also applies with `includeNonEnumerable` enabled. Values beyond the
+requested `depth` are still returned by reference without being cloned.
+Use `Map` or `Set` when the collection must be copied; they have different
+garbage-collection behavior, so they are not interchangeable with weak
+collections.
 
 ### `clone.clonePrototype(obj)`
 
@@ -102,6 +111,11 @@ So, `b.myself` points to `b`, not `a`. Neat!
 
 
 ## Changelog
+
+### Unreleased
+
+  - Reject unsupported WeakMap and WeakSet values with a clear TypeError
+    instead of returning objects with unusable native methods.
 
 ### v2.1.2
 
