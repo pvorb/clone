@@ -704,3 +704,29 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports['enumerable own getters are evaluated once'] = function (test) {
+  [true, false].forEach(function (circular) {
+    var reads = 0;
+    var source = {};
+    var first;
+    Object.defineProperty(source, 'value', {
+      enumerable: true,
+      get: function () {
+        reads++;
+        var result = {read: reads};
+        if (reads === 1) first = result;
+        return result;
+      }
+    });
+    source.other = {nested: 7};
+    var copy = clone(source, circular);
+    test.equal(reads, 1);
+    test.equal(copy.value.read, 1);
+    test.notStrictEqual(copy.value, first);
+    test.notStrictEqual(copy.other, source.other);
+    test.equal(copy.other.nested, 7);
+    test.strictEqual(clone(source, circular, 0), source);
+    test.equal(reads, 1);
+  });
+  test.done();
+};

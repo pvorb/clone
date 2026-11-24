@@ -154,6 +154,7 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       var attrs = Object.getOwnPropertyDescriptor(parent, i);
       if (attrs) {
         child[i] = _clone(parent[i], depth - 1);
+        continue;
       }
 
       try {
