@@ -704,3 +704,49 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports['descriptor properties keep cloned values and reference identity'] = function (test) {
+  var keys = ['hidden'];
+  if (typeof Symbol === 'function') keys.push(Symbol('child'));
+  keys.forEach(function (key) {
+    var nested = {value: 1};
+    var source = {visible: nested};
+    Object.defineProperty(source, key, {
+      value: nested,
+      enumerable: typeof key === 'symbol',
+      configurable: false,
+      writable: false
+    });
+    var copy = clone(source, {includeNonEnumerable: true});
+    test.notStrictEqual(copy[key], nested);
+    test.strictEqual(copy[key], copy.visible);
+    copy[key].value = 2;
+    test.equal(nested.value, 1);
+    var descriptor = Object.getOwnPropertyDescriptor(copy, key);
+    test.strictEqual(descriptor.writable, false);
+    test.strictEqual(descriptor.configurable, false);
+    test.strictEqual(descriptor.enumerable, typeof key === 'symbol');
+
+    var cyclic = {};
+    Object.defineProperty(cyclic, key, {value: cyclic});
+    var cyclicCopy = clone(cyclic, {includeNonEnumerable: true});
+    test.strictEqual(cyclicCopy[key], cyclicCopy);
+  });
+  test.done();
+};
+
+exports['descriptor accessors are copied without invoking getters'] = function (test) {
+  var keys = ['hidden'];
+  if (typeof Symbol === 'function') keys.push(Symbol('getter'));
+  keys.forEach(function (key) {
+    var source = {};
+    var calls = 0;
+    var getter = function () { calls++; return {value: 1}; };
+    Object.defineProperty(source, key, {
+      get: getter, enumerable: typeof key === 'symbol', configurable: true
+    });
+    var copy = clone(source, {includeNonEnumerable: true});
+    test.equal(calls, 0);
+    test.strictEqual(Object.getOwnPropertyDescriptor(copy, key).get, getter);
+  });
+  test.done();
+};
