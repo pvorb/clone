@@ -704,3 +704,22 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports['own __proto__ properties do not change the clone prototype'] = function (test) {
+  var source = JSON.parse('{"__proto__":{"value":1},"other":2}');
+  source.alias = source.__proto__;
+  var copy = clone(source);
+  test.strictEqual(Object.getPrototypeOf(copy), Object.getPrototypeOf(source));
+  test.strictEqual(Object.prototype.hasOwnProperty.call(copy, '__proto__'), true);
+  test.notStrictEqual(copy.__proto__, source.__proto__);
+  test.strictEqual(copy.__proto__, copy.alias);
+  test.equal(copy.other, 2);
+  copy.__proto__.value = 9;
+  test.equal(source.__proto__.value, 1);
+
+  var dictionary = Object.create(null);
+  dictionary.__proto__ = dictionary;
+  var dictionaryCopy = clone(dictionary);
+  test.strictEqual(Object.getPrototypeOf(dictionaryCopy), null);
+  test.strictEqual(dictionaryCopy.__proto__, dictionaryCopy);
+  test.done();
+};
