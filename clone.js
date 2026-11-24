@@ -84,7 +84,14 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       return parent;
     }
 
-    if (_instanceof(parent, nativeMap)) {
+    var boxedValue = __boxedValue(parent);
+    var isBoxed = typeof boxedValue !== 'undefined';
+    if (isBoxed) {
+      child = Object(boxedValue);
+      if (Object.setPrototypeOf) {
+        Object.setPrototypeOf(child, Object.getPrototypeOf(parent));
+      }
+    } else if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
     } else if (_instanceof(parent, nativeSet)) {
       child = new nativeSet();
@@ -152,6 +159,10 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
 
     for (var i in parent) {
       var attrs = Object.getOwnPropertyDescriptor(parent, i);
+      if (isBoxed && Object.getOwnPropertyDescriptor(child, i)) {
+        // String indices are already initialized and cannot be assigned.
+        continue;
+      }
       if (attrs) {
         child[i] = _clone(parent[i], depth - 1);
       }
@@ -199,6 +210,10 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         if (descriptor && descriptor.enumerable) {
           continue;
         }
+        if (isBoxed && Object.getOwnPropertyDescriptor(child, propertyName)) {
+          // String length and indices are fixed by its internal value.
+          continue;
+        }
         child[propertyName] = _clone(parent[propertyName], depth - 1);
         Object.defineProperty(child, propertyName, descriptor);
       }
@@ -227,6 +242,20 @@ clone.clonePrototype = function clonePrototype(parent) {
 };
 
 // private utility functions
+
+function __boxedValue(value) {
+  var tag = __objToStr(value);
+  if (tag === '[object Number]')
+    return Number.prototype.valueOf.call(value);
+  if (tag === '[object Boolean]')
+    return Boolean.prototype.valueOf.call(value);
+  if (tag === '[object String]')
+    return String.prototype.valueOf.call(value);
+  if (typeof BigInt !== 'undefined' && tag === '[object BigInt]')
+    return BigInt.prototype.valueOf.call(value);
+  if (typeof Symbol !== 'undefined' && tag === '[object Symbol]')
+    return Symbol.prototype.valueOf.call(value);
+}
 
 function __objToStr(o) {
   return Object.prototype.toString.call(o);

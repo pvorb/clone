@@ -704,3 +704,49 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+exports['boxed primitives retain valid internal values and custom properties'] = function (test) {
+  var values = [12, -0, NaN, false, true, '', 'abc'];
+  if (typeof BigInt === 'function') values.push(BigInt(9));
+  if (typeof Symbol === 'function') values.push(Symbol('value'));
+  values.forEach(function (value) {
+    var source = Object(value);
+    source.extra = {nested: 1};
+    source.self = source;
+    var copy = clone(source);
+    test.notStrictEqual(copy, source);
+    test.strictEqual(Object.getPrototypeOf(copy), Object.getPrototypeOf(source));
+    if (value !== value) {
+      test.ok(copy.valueOf() !== copy.valueOf());
+    } else {
+      test.strictEqual(copy.valueOf(), value);
+    }
+    if (value === 0) test.strictEqual(1 / copy.valueOf(), 1 / value);
+    test.notStrictEqual(copy.extra, source.extra);
+    test.strictEqual(copy.self, copy);
+    copy.extra.nested = 2;
+    test.equal(source.extra.nested, 1);
+    if (typeof value === 'string') {
+      test.equal(copy.toUpperCase(), value.toUpperCase());
+      test.equal(copy.length, value.length);
+    }
+  });
+  test.done();
+};
+
+exports['boxed strings retain their intrinsic non-enumerable length'] = function (test) {
+  var source = new String('abc');
+  var copy = clone(source, {includeNonEnumerable: true});
+  test.strictEqual(copy.valueOf(), 'abc');
+  test.deepEqual(Object.getOwnPropertyDescriptor(copy, 'length'),
+                 Object.getOwnPropertyDescriptor(source, 'length'));
+  test.done();
+};
+
+exports['boxed cloning does not call an overridden valueOf'] = function (test) {
+  var source = new Number(7);
+  source.valueOf = function () { throw new Error('custom valueOf'); };
+  var copy = clone(source);
+  test.equal(Number.prototype.valueOf.call(copy), 7);
+  test.strictEqual(copy.valueOf, source.valueOf);
+  test.done();
+};
