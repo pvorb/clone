@@ -78,6 +78,13 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     if (depth === 0)
       return parent;
 
+    if (circular) {
+      var index = allParents.indexOf(parent);
+      if (index != -1) {
+        return allChildren[index];
+      }
+    }
+
     var child;
     var proto;
     if (typeof parent != 'object') {
@@ -127,11 +134,6 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     }
 
     if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
       allParents.push(parent);
       allChildren.push(child);
     }

@@ -704,3 +704,39 @@ exports["clone should not fail when cloning an object that does not have setters
 
   test.done();
 };
+if (typeof Promise === 'function') {
+  exports['shared promises create one clone subscription'] = function (test) {
+    var originalValue = {nested: 1};
+    var source = Promise.resolve(originalValue);
+    var subscriptions = 0;
+    var originalThen = source.then;
+    source.then = function () {
+      subscriptions++;
+      return originalThen.apply(this, arguments);
+    };
+    var copy = clone([source, source]);
+    test.equal(subscriptions, 1);
+    test.strictEqual(copy[0], copy[1]);
+    copy[0].then(function (value) {
+      test.notStrictEqual(value, originalValue);
+      test.equal(value.nested, 1);
+      test.done();
+    }, function (error) {
+      test.ifError(error);
+      test.done();
+    });
+  };
+
+  if (parseInt(process.versions.node, 10) >= 15) {
+    exports['caught shared promise rejections do not leave unhandled clones'] = function (test) {
+      var script = 'var clone = require(' + JSON.stringify(__dirname + '/clone.js') + ');' +
+        'var source = Promise.reject(new Error("expected rejection"));' +
+        'var copy = clone([source, source]);' +
+        'copy[0].catch(function () {});';
+      var result = require('child_process').spawnSync(
+        process.execPath, ['--unhandled-rejections=strict', '-e', script]);
+      test.equal(result.status, 0, String(result.stderr));
+      test.done();
+    };
+  }
+}
