@@ -186,7 +186,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
           continue;
         }
-        child[symbol] = _clone(parent[symbol], depth - 1);
+        if ('value' in descriptor) {
+          descriptor.value = _clone(descriptor.value, depth - 1);
+        }
         Object.defineProperty(child, symbol, descriptor);
       }
     }
@@ -199,7 +201,9 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
         if (descriptor && descriptor.enumerable) {
           continue;
         }
-        child[propertyName] = _clone(parent[propertyName], depth - 1);
+        if ('value' in descriptor) {
+          descriptor.value = _clone(descriptor.value, depth - 1);
+        }
         Object.defineProperty(child, propertyName, descriptor);
       }
     }
