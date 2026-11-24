@@ -152,6 +152,15 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
 
     for (var i in parent) {
       var attrs = Object.getOwnPropertyDescriptor(parent, i);
+      if (attrs && i === '__proto__') {
+        Object.defineProperty(child, i, {
+          value: _clone(parent[i], depth - 1),
+          enumerable: true,
+          configurable: true,
+          writable: true
+        });
+        continue;
+      }
       if (attrs) {
         child[i] = _clone(parent[i], depth - 1);
       }
